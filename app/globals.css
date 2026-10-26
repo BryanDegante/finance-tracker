@@ -6,31 +6,58 @@
   --font-nunito: var(--font-nunito);
   --font-quicksand: var(--font-quicksand);
 
-  /* Backgrounds */
+  /* Backgrounds & Surfaces */
   --color-background: #faf6f0;
   --color-card: #ffffff;
   --color-card-muted: #ede3d5;
+  --color-surface-tint: #f4ece1;
+  /* Soft neutral highlight for hovered rows or active tab panels */
 
-  /* Primary actions */
+  /* Primary actions (Soft Blush Pink) */
   --color-primary: #e8b7c8;
   --color-primary-hover: #d9a0b4;
+  --color-primary-light: #faeaf0;
+  /* Ultra-soft background tint for active badges/tags */
 
-  /* Secondary actions */
+  /* Secondary actions (Sage Green) */
   --color-secondary: #a3b18a;
   --color-secondary-hover: #8f9f76;
+  --color-secondary-light: #eef2ea;
+  /* Soft green tint for financial income cards */
 
-  /* Text */
+  /* Text & Typography */
   --color-text-primary: #49372e;
   --color-text-secondary: #795548;
   --color-text-muted: #8c8179;
+  --color-text-on-primary: #3d2922;
+  /* High-contrast brown text for on top of pink buttons */
 
-  /* Borders */
+  /* Borders & Dividers */
   --color-border: #e4d8cc;
   --color-border-hover: #cbb9aa;
 
-  /* Status colors */
+  /* Financial & Status Indicators */
   --color-success: #547a58;
+  --color-success-bg: #eaf1eb;
+  /* Soft green background tint for savings goals */
   --color-danger: #b94d5c;
+  --color-danger-bg: #f9ebeb;
+  /* Soft pink/red background tint for expense badges */
+  --color-warning: #d99b53;
+  /* Soft amber for pending transactions or budget warnings */
+
+  /* Custom Radii for Cozy Feel */
+  --radius-cozy-sm: 0.75rem;
+  /*  12px */
+  --radius-cozy: 1.25rem;
+  /*  20px - Great for cards & modals */
+  --radius-cozy-lg: 1.75rem;
+  /*  28px - Great for main hero containers */
+
+  /* Warm Custom Shadows */
+  --shadow-cozy-sm: 0 2px 8px -2px rgba(73, 55, 46, 0.06);
+  --shadow-cozy: 0 4px 16px -4px rgba(73, 55, 46, 0.08);
+  --shadow-cozy-lg: 0 12px 32px -8px rgba(73, 55, 46, 0.12);
 }
 
 html,
