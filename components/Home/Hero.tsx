@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import LoginButton from '../UI/Login/LoginButton';
+import ModalButton from '../UI/Login/Modal/ModalButton';
 
 export default function Hero() {
 	return (
@@ -12,12 +12,12 @@ export default function Hero() {
 						className="inline-flex items-center gap-3 font-quicksand text-2xl font-bold tracking-tight text-text-primary sm:text-3xl"
 					>
 						<Image
-							src="/logo.png"
+							src="/budgetier.png"
 							alt="Budgetier logo"
-							width={72}
-							height={72}
+							width={100}
+							height={100}
 							priority
-							className="h-16 w-16 object-contain sm:h-[72px] sm:w-[72px]"
+							className="h-30 w-30 object-contain sm:h-40 sm:w-40"
 						/>
 
 						<span>
@@ -50,7 +50,7 @@ export default function Hero() {
 
 					{/* Call to action */}
 					<div className="mt-8">
-						<LoginButton label="Get Started" variant="blush" />
+						<ModalButton label="Get Started" variant="blush" />
 					</div>
 				</div>
 			</div>

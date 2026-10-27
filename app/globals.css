@@ -2,9 +2,9 @@
 
 @theme {
   /* Fonts */
-  --font-sans: var(--font-nunito-sans);
-  --font-nunito: var(--font-nunito);
-  --font-quicksand: var(--font-quicksand);
+  --font-sans-text: var(--font-nunito-sans);
+  --font-nunito-titles: var(--font-nunito);
+  --font-quicksand-decorative: var(--font-quicksand);
 
   /* Backgrounds & Surfaces */
   --color-background: #faf6f0;
@@ -68,7 +68,7 @@ body {
 body {
   background-color: var(--color-background);
   color: var(--color-text-primary);
-  font-family: var(--font-sans), sans-serif;
+  font-family: var(--font-sans-text), sans-serif;
 }
 
 * {
