@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { Nunito_Sans, Nunito, Quicksand } from 'next/font/google';
 import './globals.css';
-import LoginModal from '@/components/UI/Login/Modal/LoginModal';
+import LoginModal from '@/components/UI/Form/Modal/LoginModal';
 
 const nunitoSans = Nunito_Sans({
   variable: '--font-nunito-sans',
