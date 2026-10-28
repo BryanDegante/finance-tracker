@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import ModalButton from '../UI/Form/Modal/ModalButton';
+import ModalButton from '../UI/Form/AuthModal/ModalButton';
 
 export default function Hero() {
   return (
@@ -47,7 +47,7 @@ export default function Hero() {
             progress toward your goals—all in one place.
           </p>
           <div className='mt-8'>
-            <ModalButton label='Get Started' />
+            <ModalButton label='Get Started'  />
           </div>
         </div>
       </div>
