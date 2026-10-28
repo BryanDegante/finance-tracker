@@ -2,9 +2,10 @@ type FormButtonProps = {
   label: string;
   variant: 'sage' | 'blush' | 'outline';
 	type:'button' | 'submit' | 'reset';
+	onClick ?: () => void;
 };
 
-export default function FormButton({ label, variant,type }: FormButtonProps) {
+export default function FormButton({ label, variant,type,onClick}: FormButtonProps) {
   const variants = {
     sage: `
 			bg-secondary text-text-on-primary
@@ -28,6 +29,7 @@ export default function FormButton({ label, variant,type }: FormButtonProps) {
   return (
     <button
       type={type}
+			onClick={onClick}
       className={`group relative inline-flex items-center justify-center
 				px-6 py-3 text-sm font-medium rounded-cozy-sm
 				transition-all duration-300 ease-out
