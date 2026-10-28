@@ -26,17 +26,14 @@ export default function AuthModal() {
       return;
     }
 
-    // Remember which element was focused before opening the modal.
     previousFocusRef.current =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
         : null;
 
-    // Prevent scrolling the page behind the modal.
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
 
-    // Move focus to the first form input.
     const firstInput =
       dialogRef.current?.querySelector<HTMLInputElement>('input');
 
@@ -47,14 +44,12 @@ export default function AuthModal() {
 
       if (!dialog) return;
 
-      // Close the modal with Escape.
       if (event.key === 'Escape') {
         event.preventDefault();
         dispatch(closeAuthModal());
         return;
       }
 
-      // Keep keyboard focus inside the modal.
       if (event.key === 'Tab') {
         const focusableElements = dialog.querySelectorAll<HTMLElement>(
           'a[href], button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])'
@@ -95,10 +90,8 @@ export default function AuthModal() {
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
 
-      // Restore the page's original scrolling behavior.
       document.body.style.overflow = previousOverflow;
 
-      // Return focus to the element that opened the modal.
       if (previousFocusRef.current?.isConnected) {
         previousFocusRef.current.focus();
       }
@@ -130,7 +123,7 @@ export default function AuthModal() {
           type="button"
           onClick={() => dispatch(closeAuthModal())}
           aria-label="Close authentication modal"
-          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-xl text-text-muted transition-colors hover:bg-surface-tint hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary"
+          className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full text-xl text-text-muted transition-colors hover:bg-surface-tint hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary cursor-pointer"
         >
           <span aria-hidden="true">&times;</span>
         </button>

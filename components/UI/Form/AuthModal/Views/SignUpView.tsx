@@ -107,7 +107,7 @@ export default function SignUpView() {
               type='button'
               onClick={() => setShowPassword((current) => !current)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className='absolute inset-y-0 right-3 text-sm font-medium text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary'
+              className='absolute inset-y-0 right-3 text-sm font-medium text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary cursor-pointer'
             >
               {showPassword ? 'Hide' : 'Show'}
             </button>
@@ -140,7 +140,7 @@ export default function SignUpView() {
               aria-label={
                 showConfirmPassword ? 'Hide password confirmation' : 'Show password confirmation'
               }
-              className='absolute inset-y-0 right-3 text-sm font-medium text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary'
+              className='absolute inset-y-0 right-3 text-sm font-medium text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary cursor-pointer'
             >
               {showConfirmPassword ? 'Hide' : 'Show'}
             </button>

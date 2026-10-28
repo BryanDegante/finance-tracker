@@ -65,7 +65,7 @@ export default function LoginView() {
               type='button'
               onClick={() => setShowPassword((current) => !current)}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className='absolute inset-y-0 right-3 text-sm font-medium text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary'
+              className='absolute inset-y-0 right-3 text-sm font-medium text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary cursor-pointer'
             >
               {showPassword ? 'Hide' : 'Show'}
             </button>
@@ -75,7 +75,7 @@ export default function LoginView() {
         {/* Forgot Password */}
         <button
           type='button'
-          className='self-end text-sm font-medium text-text-secondary transition-colors hover:text-secondary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary'
+          className='self-end text-sm font-medium text-text-secondary transition-colors hover:text-secondary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary cursor-pointer'
         >
           Forgot password?
         </button>

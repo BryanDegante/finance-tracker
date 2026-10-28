@@ -30,7 +30,7 @@ export default function FormButton({ label, variant,type,onClick}: FormButtonPro
     <button
       type={type}
 			onClick={onClick}
-      className={`group relative inline-flex items-center justify-center
+      className={`group cursor-pointer relative inline-flex items-center justify-center
 				px-6 py-3 text-sm font-medium rounded-cozy-sm
 				transition-all duration-300 ease-out
 				active:scale-[0.98] active:translate-y-0
