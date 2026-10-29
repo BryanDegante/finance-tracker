@@ -1,41 +1,42 @@
-import { createServerClient } from "@supabase/ssr";
-import { type NextRequest, NextResponse } from "next/server";
+import { createServerClient } from '@supabase/ssr';
+import { type NextRequest, NextResponse } from 'next/server';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!;
+export async function updateSession(request: NextRequest) {
+	const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+	const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-export const createClient = async (request: NextRequest) => {
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
+	if (!supabaseUrl || !supabaseKey) {
+		throw new Error('Missing Supabase environment variables.');
+	}
 
-  const supabase = createServerClient(
-    supabaseUrl,
-    supabaseKey,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll();
-        },
+	let supabaseResponse = NextResponse.next({
+		request,
+	});
 
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => {
-            request.cookies.set(name, value);
-          });
+	const supabase = createServerClient(supabaseUrl, supabaseKey, {
+		cookies: {
+			getAll() {
+				return request.cookies.getAll();
+			},
 
-          supabaseResponse = NextResponse.next({
-            request,
-          });
+			setAll(cookiesToSet) {
+				cookiesToSet.forEach(({ name, value }) => {
+					request.cookies.set(name, value);
+				});
 
-          cookiesToSet.forEach(({ name, value, options }) => {
-            supabaseResponse.cookies.set(name, value, options);
-          });
-        },
-      },
-    },
-  );
+				supabaseResponse = NextResponse.next({
+					request,
+				});
 
-  await supabase.auth.getClaims();
+				cookiesToSet.forEach(({ name, value, options }) => {
+					supabaseResponse.cookies.set(name, value, options);
+				});
+			},
+		},
+	});
 
-  return supabaseResponse;
-};
+	// Refreshes the session if necessary and validates the JWT claims.
+	await supabase.auth.getClaims();
+
+	return supabaseResponse;
+}

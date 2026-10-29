@@ -1,166 +1,200 @@
 'use client';
 
-import { useState } from 'react';
+import { useActionState, useState } from 'react';
 import FormButton from '../../FormButton';
+import { signUpAction, type AuthActionState } from '@/app/actions/auth';
+
+const initialState: AuthActionState = {
+	error: null,
+	success: null,
+};
 
 export default function SignUpView() {
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  function handleSubmit(event: React.SubmitEvent<HTMLFormElement>) {
-    event.preventDefault();
+	const [state, formAction, isPending] = useActionState(
+		signUpAction,
+		initialState,
+	);
 
-    const formData = new FormData(event.currentTarget);
-    const password = formData.get('password');
-    const confirmPassword = formData.get('confirm-password');
+	return (
+		<div>
+			{/* Heading */}
+			<div className="mb-6">
+				<h3 className="mb-1 font-quicksand-decorative text-lg font-bold text-text-primary sm:text-xl">
+					Create Your Account
+				</h3>
 
-    if (password !== confirmPassword) {
-      setError("Passwords don't match.");
-      return;
-    }
+				<p className="font-sans-text text-sm text-text-muted sm:text-base">
+					Start building healthier money habits, one step at a time.
+				</p>
+			</div>
 
-    setError('');
+			{/* Signup Form */}
+			<form action={formAction} className="flex flex-col gap-4">
+				{/* Name */}
+				<div className="flex flex-col gap-1.5">
+					<label
+						htmlFor="signup-name"
+						className="text-sm font-medium text-text-secondary"
+					>
+						Name
+					</label>
 
-    // Supabase account creation will go here later.
-  }
+					<input
+						id="signup-name"
+						name="name"
+						type="text"
+						placeholder="Enter your name"
+						autoComplete="name"
+						required
+						maxLength={80}
+						disabled={isPending}
+						className="min-h-11 w-full rounded-cozy-sm border border-border bg-card px-3 py-2.5 text-sm text-text-primary transition-colors duration-200 placeholder:text-text-muted hover:border-secondary-hover focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
+					/>
+				</div>
 
-  return (
-    <div>
-      {/* Heading */}
-      <div className='mb-6'>
-        <h3 className='mb-1 font-quicksand-decorative text-lg font-bold text-text-primary sm:text-xl'>
-          Create Your Account
-        </h3>
+				{/* Email */}
+				<div className="flex flex-col gap-1.5">
+					<label
+						htmlFor="signup-email"
+						className="text-sm font-medium text-text-secondary"
+					>
+						Email
+					</label>
 
-        <p className='font-sans-text text-sm text-text-muted sm:text-base'>
-          Start building healthier money habits, one step at a time.
-        </p>
-      </div>
+					<input
+						id="signup-email"
+						name="email"
+						type="email"
+						placeholder="Enter your email"
+						autoComplete="email"
+						autoCapitalize="none"
+						spellCheck={false}
+						required
+						maxLength={254}
+						disabled={isPending}
+						className="min-h-11 w-full rounded-cozy-sm border border-border bg-card px-3 py-2.5 text-sm text-text-primary transition-colors duration-200 placeholder:text-text-muted hover:border-secondary-hover focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
+					/>
+				</div>
 
-      {/* Signup Form */}
-      <form
-        className='flex flex-col gap-4'
-        onSubmit={handleSubmit}
-      >
-        {/* Name */}
-        <div className='flex flex-col gap-1.5'>
-          <label
-            htmlFor='signup-name'
-            className='text-sm font-medium text-text-secondary'
-          >
-            Name
-          </label>
+				{/* Password */}
+				<div className="flex flex-col gap-1.5">
+					<label
+						htmlFor="signup-password"
+						className="text-sm font-medium text-text-secondary"
+					>
+						Password
+					</label>
 
-          <input
-            id='signup-name'
-            name='name'
-            type='text'
-            placeholder='Enter your name'
-            autoComplete='name'
-            required
-            className='min-h-11 w-full rounded-cozy-sm border border-border bg-card px-3 py-2.5 text-sm text-text-primary transition-colors duration-200 placeholder:text-text-muted hover:border-secondary-hover focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20 sm:text-base'
-          />
-        </div>
+					<div className="relative">
+						<input
+							id="signup-password"
+							name="password"
+							type={showPassword ? 'text' : 'password'}
+							placeholder="Create a password"
+							autoComplete="new-password"
+							required
+							minLength={12}
+							maxLength={128}
+							disabled={isPending}
+							className="min-h-11 w-full rounded-cozy-sm border border-border bg-card px-3 py-2.5 pr-16 text-sm text-text-primary transition-colors duration-200 placeholder:text-text-muted hover:border-secondary-hover focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
+						/>
 
-        {/* Email */}
-        <div className='flex flex-col gap-1.5'>
-          <label
-            htmlFor='signup-email'
-            className='text-sm font-medium text-text-secondary'
-          >
-            Email
-          </label>
+						<button
+							type="button"
+							onClick={() =>
+								setShowPassword((current) => !current)
+							}
+							disabled={isPending}
+							aria-label={
+								showPassword ? 'Hide password' : 'Show password'
+							}
+							aria-pressed={showPassword}
+							className="absolute inset-y-0 right-3 cursor-pointer text-sm font-medium text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary disabled:cursor-not-allowed disabled:opacity-60"
+						>
+							{showPassword ? 'Hide' : 'Show'}
+						</button>
+					</div>
 
-          <input
-            id='signup-email'
-            name='email'
-            type='email'
-            placeholder='Enter your email'
-            autoComplete='email'
-            required
-            className='min-h-11 w-full rounded-cozy-sm border border-border bg-card px-3 py-2.5 text-sm text-text-primary transition-colors duration-200 placeholder:text-text-muted hover:border-secondary-hover focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20 sm:text-base'
-          />
-        </div>
+					<p className="text-xs text-text-muted">
+						Use at least 12 characters.
+					</p>
+				</div>
 
-        {/* Password */}
-        <div className='flex flex-col gap-1.5'>
-          <label
-            htmlFor='signup-password'
-            className='text-sm font-medium text-text-secondary'
-          >
-            Password
-          </label>
+				{/* Confirm Password */}
+				<div className="flex flex-col gap-1.5">
+					<label
+						htmlFor="confirm-password"
+						className="text-sm font-medium text-text-secondary"
+					>
+						Confirm Password
+					</label>
 
-          <div className='relative'>
-            <input
-              id='signup-password'
-              name='password'
-              type={showPassword ? 'text' : 'password'}
-              placeholder='Create a password'
-              autoComplete='new-password'
-              required
-              className='min-h-11 w-full rounded-cozy-sm border border-border bg-card px-3 py-2.5 pr-16 text-sm text-text-primary transition-colors duration-200 placeholder:text-text-muted hover:border-secondary-hover focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20 sm:text-base'
-            />
+					<div className="relative">
+						<input
+							id="confirm-password"
+							name="confirm-password"
+							type={showConfirmPassword ? 'text' : 'password'}
+							placeholder="Confirm your password"
+							autoComplete="new-password"
+							required
+							minLength={12}
+							maxLength={128}
+							disabled={isPending}
+							className="min-h-11 w-full rounded-cozy-sm border border-border bg-card px-3 py-2.5 pr-16 text-sm text-text-primary transition-colors duration-200 placeholder:text-text-muted hover:border-secondary-hover focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
+						/>
 
-            <button
-              type='button'
-              onClick={() => setShowPassword((current) => !current)}
-              aria-label={showPassword ? 'Hide password' : 'Show password'}
-              className='absolute inset-y-0 right-3 text-sm font-medium text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary cursor-pointer'
-            >
-              {showPassword ? 'Hide' : 'Show'}
-            </button>
-          </div>
-        </div>
+						<button
+							type="button"
+							onClick={() =>
+								setShowConfirmPassword((current) => !current)
+							}
+							disabled={isPending}
+							aria-label={
+								showConfirmPassword
+									? 'Hide password confirmation'
+									: 'Show password confirmation'
+							}
+							aria-pressed={showConfirmPassword}
+							className="absolute inset-y-0 right-3 cursor-pointer text-sm font-medium text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary disabled:cursor-not-allowed disabled:opacity-60"
+						>
+							{showConfirmPassword ? 'Hide' : 'Show'}
+						</button>
+					</div>
+				</div>
 
-        {/* Confirm Password */}
-        <div className='flex flex-col gap-1.5'>
-          <label
-            htmlFor='confirm-password'
-            className='text-sm font-medium text-text-secondary'
-          >
-            Confirm Password
-          </label>
+				{/* Server Error */}
+				{state.error && (
+					<p
+						role="alert"
+						aria-live="polite"
+						className="rounded-cozy-sm border border-primary/30 bg-primary/10 p-3 text-sm text-text-primary"
+					>
+						{state.error}
+					</p>
+				)}
 
-          <div className='relative'>
-            <input
-              id='confirm-password'
-              name='confirm-password'
-              type={showConfirmPassword ? 'text' : 'password'}
-              placeholder='Confirm your password'
-              autoComplete='new-password'
-              required
-              className='min-h-11 w-full rounded-cozy-sm border border-border bg-card px-3 py-2.5 pr-16 text-sm text-text-primary transition-colors duration-200 placeholder:text-text-muted hover:border-secondary-hover focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20 sm:text-base'
-            />
+				{/* Confirmation Message */}
+				{state.success && (
+					<p
+						role="status"
+						aria-live="polite"
+						className="rounded-cozy-sm border border-secondary/30 bg-secondary/10 p-3 text-sm text-text-primary"
+					>
+						{state.success}
+					</p>
+				)}
 
-            <button
-              type='button'
-              onClick={() => setShowConfirmPassword((current) => !current)}
-              aria-label={
-                showConfirmPassword ? 'Hide password confirmation' : 'Show password confirmation'
-              }
-              className='absolute inset-y-0 right-3 text-sm font-medium text-text-muted transition-colors hover:text-text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary cursor-pointer'
-            >
-              {showConfirmPassword ? 'Hide' : 'Show'}
-            </button>
-          </div>
-        </div>
-
-        {/* Validation Error */}
-        {error && (
-          <p className='text-sm text-danger' role='alert'>
-            {error}
-          </p>
-        )}
-
-        {/* Submit */}
-        <FormButton
-          label='Create Account'
-          variant='sage'
-          type='submit'
-        />
-      </form>
-    </div>
-  );
+				{/* Submit */}
+				<FormButton
+					label={isPending ? 'Creating account...' : 'Create Account'}
+					variant="sage"
+					type="submit"
+					disabled={isPending}
+				/>
+			</form>
+		</div>
+	);
 }
