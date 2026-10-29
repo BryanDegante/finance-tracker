@@ -156,6 +156,9 @@ export async function signUpAction(
 	const cookieStore = await cookies();
 	const supabase = createClient(cookieStore);
 
+	const genericSignupSuccess =
+		'If you can register with these details, check your inbox for an email confirmation link.';
+
 	const { data, error } = await supabase.auth.signUp({
 		email,
 		password,
@@ -168,6 +171,18 @@ export async function signUpAction(
 	});
 
 	if (error) {
+		if (
+			error.code === 'user_already_exists' ||
+			error.code === 'email_exists'
+		) {
+			return {
+				error: null,
+				success: genericSignupSuccess,
+			};
+		}
+
+		console.error('Supabase signup failed:', error.code);
+
 		return {
 			error: 'Unable to create your account with those details. Please try again.',
 			success: null,
@@ -180,8 +195,7 @@ export async function signUpAction(
 
 	return {
 		error: null,
-		success:
-			'If you can register with these details, check your inbox for an email confirmation link.',
+		success: genericSignupSuccess,
 	};
 }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import FormButton from '../../FormButton';
 import { signUpAction, type AuthActionState } from '@/app/actions/auth';
 
@@ -9,14 +9,92 @@ const initialState: AuthActionState = {
 	success: null,
 };
 
-export default function SignUpView() {
+type SignUpViewProps = {
+	onSuccessChange: (success: boolean) => void;
+	onBackToSignIn: () => void;
+};
+
+export default function SignUpView({
+	onSuccessChange,
+	onBackToSignIn,
+}: SignUpViewProps) {
 	const [showPassword, setShowPassword] = useState(false);
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [submittedEmail, setSubmittedEmail] = useState('');
 
 	const [state, formAction, isPending] = useActionState(
 		signUpAction,
 		initialState,
 	);
+
+	useEffect(() => {
+		onSuccessChange(Boolean(state.success));
+	}, [state.success, onSuccessChange]);
+
+	// Show the dedicated confirmation screen after a successful signup request.
+	if (state.success) {
+		return (
+			<div className="flex flex-col items-center py-4 text-center">
+				{/* Email illustration */}
+				<div
+					aria-hidden="true"
+					className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/15 text-secondary"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="1.6"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						className="h-8 w-8"
+					>
+						<rect x="3" y="5" width="18" height="14" rx="2" />
+						<path d="m3 7 9 6 9-6" />
+					</svg>
+				</div>
+
+				<h3 className="mb-2 font-quicksand-decorative text-xl font-bold text-text-primary sm:text-2xl">
+					Check your email
+				</h3>
+
+				<p className="mb-4 text-sm leading-relaxed text-text-muted sm:text-base">
+					Thanks for signing up! If an account can be registered with
+					this address, you&apos;ll receive an email with instructions
+					to confirm it.
+				</p>
+
+				{submittedEmail && (
+					<div className="mb-5 w-full break-all rounded-cozy-sm border border-border bg-surface-tint px-4 py-3">
+						<p className="text-xs text-text-muted">
+							Check your inbox for
+						</p>
+						<p className="mt-1 text-sm font-semibold text-text-primary">
+							{submittedEmail}
+						</p>
+					</div>
+				)}
+
+				<p
+					role="status"
+					aria-live="polite"
+					className="mb-6 text-sm text-text-secondary"
+				>
+					Don&apos;t see the email? Check your spam or junk folder.
+				</p>
+
+				<div className="w-full">
+					<FormButton
+						label="Back to Sign In"
+						variant="sage"
+						type="button"
+						onClick={onBackToSignIn}
+					/>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div>
@@ -32,7 +110,18 @@ export default function SignUpView() {
 			</div>
 
 			{/* Signup Form */}
-			<form action={formAction} className="flex flex-col gap-4">
+			<form
+				action={formAction}
+				onSubmit={(event) => {
+					const formData = new FormData(event.currentTarget);
+					const email = formData.get('email');
+
+					if (typeof email === 'string') {
+						setSubmittedEmail(email.trim());
+					}
+				}}
+				className="flex flex-col gap-4"
+			>
 				{/* Name */}
 				<div className="flex flex-col gap-1.5">
 					<label
@@ -173,17 +262,6 @@ export default function SignUpView() {
 						className="rounded-cozy-sm border border-primary/30 bg-primary/10 p-3 text-sm text-text-primary"
 					>
 						{state.error}
-					</p>
-				)}
-
-				{/* Confirmation Message */}
-				{state.success && (
-					<p
-						role="status"
-						aria-live="polite"
-						className="rounded-cozy-sm border border-secondary/30 bg-secondary/10 p-3 text-sm text-text-primary"
-					>
-						{state.success}
 					</p>
 				)}
 

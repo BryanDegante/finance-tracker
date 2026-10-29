@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import ModalButton from '../UI/Form/AuthModal/ModalButton';
+import ModalButton from '../UI/AuthForm/AuthModal/ModalButton';
 
 export default function Hero() {
 	return (
