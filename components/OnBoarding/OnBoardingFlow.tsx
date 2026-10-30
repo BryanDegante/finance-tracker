@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
+import { completeOnboarding } from '@/app/onboarding/actions';
 import WelcomePage from './steps/WelcomePage';
 import ProfileStep from './steps/ProfileStep';
 import Mode from './steps/Mode';
@@ -13,17 +14,16 @@ const TOTAL_STEPS = 4;
 
 export default function OnBoardingFlow() {
 	const [currentStep, setCurrentStep] = useState(1);
+	const [isPending, startTransition] = useTransition();
+	const [submitError, setSubmitError] = useState<string | null>(null);
 
-const [formData, setFormData] = useState<OnboardingData>({
-	primaryGoal: '',
-	fullName: '',
-	startingBalance: '',
-	income: '',
-	appMode: '',
-	theme: 'light',
-});
+	const [formData, setFormData] = useState<OnboardingData>({
+		fullName: '',
+		startingBalance: '',
+		theme: 'light',
+	});
 
-	const updateData = (fields: Partial<typeof formData>) => {
+	const updateData = (fields: Partial<OnboardingData>) => {
 		setFormData((prev) => ({
 			...prev,
 			...fields,
@@ -31,11 +31,47 @@ const [formData, setFormData] = useState<OnboardingData>({
 	};
 
 	const goToNextStep = () => {
+		setSubmitError(null);
 		setCurrentStep((prev) => Math.min(TOTAL_STEPS, prev + 1));
 	};
 
 	const goToPreviousStep = () => {
+		setSubmitError(null);
 		setCurrentStep((prev) => Math.max(1, prev - 1));
+	};
+
+	const handleSubmit = () => {
+		if (isPending) return;
+
+		setSubmitError(null);
+
+		startTransition(async () => {
+			try {
+				const result = await completeOnboarding(formData);
+
+				if (result?.error) {
+					setSubmitError(result.error);
+				}
+			} catch (error) {
+				// Next.js redirects use a special thrown signal.
+				// Re-throw it so successful onboarding can redirect normally.
+				if (
+					error !== null &&
+					typeof error === 'object' &&
+					'digest' in error &&
+					typeof error.digest === 'string' &&
+					error.digest.startsWith('NEXT_REDIRECT')
+				) {
+					throw error;
+				}
+
+				console.error('Unexpected onboarding submission error:', error);
+
+				setSubmitError(
+					'Something went wrong while finishing your setup. Please try again.',
+				);
+			}
+		});
 	};
 
 	const renderStep = () => {
@@ -118,56 +154,102 @@ const [formData, setFormData] = useState<OnboardingData>({
 					{renderStep()}
 				</div>
 
-				{/* Step navigation */}
+				{/* Step navigation and error recovery */}
 				<div className="flex items-center justify-between gap-4 border-t border-border pt-6">
-					{currentStep > 1 && !isFinalStep ? (
-						<button
-							type="button"
-							onClick={goToPreviousStep}
-							aria-label={`Go back to step ${currentStep - 1}`}
-							className="flex cursor-pointer items-center rounded-xl border border-border bg-secondary px-5 py-2.5 text-sm font-semibold text-text-primary transition-all duration-200 hover:border-border-hover hover:bg-secondary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.98]"
-						>
-							<span
-								aria-hidden="true"
-								className="mr-2 inline-flex"
+					{submitError ? (
+						<>
+							<button
+								type="button"
+								onClick={goToPreviousStep}
+								disabled={isPending}
+								className="inline-flex items-center rounded-xl border border-border bg-secondary px-5 py-2.5 text-sm font-semibold text-text-primary transition-colors hover:border-border-hover hover:bg-secondary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-60"
 							>
-								<FaArrowLeftLong />
-							</span>
-							Previous
-						</button>
-					) : (
-						<div aria-hidden="true" />
-					)}
+								<FaArrowLeftLong
+									aria-hidden="true"
+									className="mr-2"
+								/>
+								Go Back
+							</button>
 
-					{!isFinalStep ? (
-						<button
-							type="button"
-							onClick={goToNextStep}
-							aria-label={`Continue to step ${currentStep + 1}`}
-							className="ml-auto inline-flex cursor-pointer items-center rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-text-on-primary shadow-md shadow-black/5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-0"
-						>
-							Continue
-							<span
-								aria-hidden="true"
-								className="ml-2 inline-flex"
+							<button
+								type="button"
+								onClick={handleSubmit}
+								disabled={isPending}
+								className="inline-flex items-center rounded-xl bg-primary px-5 py-3 text-sm font-semibold text-text-on-primary shadow-md shadow-black/5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:cursor-not-allowed disabled:opacity-60"
 							>
-								<FaArrowRightLong />
-							</span>
-						</button>
+								{isPending ? 'Saving...' : 'Try Again'}
+							</button>
+						</>
 					) : (
-						<button
-							type="button"
-							onClick={() => {
-								// Connect this to the secure onboarding
-								// completion action in a later step.
-								console.log('Finished onboarding:', formData);
-							}}
-							className="ml-auto w-full cursor-pointer rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-text-on-primary shadow-md shadow-black/5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-0 sm:w-auto sm:px-8"
-						>
-							Enter Dashboard
-						</button>
+						<>
+							{currentStep > 1 && !isFinalStep ? (
+								<button
+									type="button"
+									onClick={goToPreviousStep}
+									disabled={isPending}
+									aria-label={`Go back to step ${currentStep - 1}`}
+									className="flex cursor-pointer items-center rounded-xl border border-border bg-secondary px-5 py-2.5 text-sm font-semibold text-text-primary transition-all duration-200 hover:border-border-hover hover:bg-secondary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+								>
+									<FaArrowLeftLong
+										aria-hidden="true"
+										className="mr-2"
+									/>
+									Previous
+								</button>
+							) : (
+								<div aria-hidden="true" />
+							)}
+
+							{!isFinalStep ? (
+								<button
+									type="button"
+									onClick={goToNextStep}
+									aria-label={`Continue to step ${currentStep + 1}`}
+									className="ml-auto inline-flex cursor-pointer items-center rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-text-on-primary shadow-md shadow-black/5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-0"
+								>
+									Continue
+									<FaArrowRightLong
+										aria-hidden="true"
+										className="ml-2"
+									/>
+								</button>
+							) : (
+								<button
+									type="button"
+									onClick={handleSubmit}
+									disabled={isPending}
+									className="ml-auto w-full cursor-pointer rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-text-on-primary shadow-md shadow-black/5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:px-8"
+								>
+									{isPending
+										? 'Saving your setup...'
+										: 'Enter Dashboard'}
+								</button>
+							)}
+						</>
 					)}
 				</div>
+
+				{/* Submission error */}
+				{submitError && (
+					<div
+						role="alert"
+						aria-live="assertive"
+						className="mt-5 rounded-cozy border border-danger/20 bg-danger-bg p-4 text-center"
+					>
+						<p className="text-sm font-semibold text-danger">
+							We couldn&apos;t finish setting up your account.
+						</p>
+
+						<p className="mt-1 text-sm text-text-secondary">
+							{submitError}
+						</p>
+
+						<p className="mt-2 text-xs text-text-muted">
+							Your information may have been partially saved. You
+							can try again or go back to review your setup.
+						</p>
+					</div>
+				)}
 			</section>
 		</div>
 	);

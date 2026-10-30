@@ -92,6 +92,7 @@ describe('DashboardPage', () => {
 			data: {
 				display_name: 'Test User',
 				currency_code: 'USD',
+				onboarding_completed: true,
 			},
 			error: null,
 		});
@@ -107,7 +108,7 @@ describe('DashboardPage', () => {
 
 		expect(mockEq).toHaveBeenCalledWith('id', 'test-user-id');
 		expect(mockSelect).toHaveBeenCalledWith(
-			'display_name, currency_code',
+			'display_name, currency_code, onboarding_completed',
 		);
 	});
 
@@ -123,6 +124,7 @@ describe('DashboardPage', () => {
 			data: {
 				display_name: null,
 				currency_code: null,
+				onboarding_completed: true,
 			},
 			error: null,
 		});
@@ -131,6 +133,30 @@ describe('DashboardPage', () => {
 		render(page);
 
 		expect(screen.getByText('Preferred currency: USD')).toBeInTheDocument();
+	});
+
+	it('redirects to onboarding when onboarding is incomplete', async () => {
+		mockGetClaims.mockResolvedValue({
+			data: {
+				claims: { sub: 'test-user-id' },
+			},
+			error: null,
+		});
+
+		mockMaybeSingle.mockResolvedValue({
+			data: {
+				display_name: 'Test User',
+				currency_code: 'USD',
+				onboarding_completed: false,
+			},
+			error: null,
+		});
+
+		await expect(DashboardPage()).rejects.toThrow(
+			'NEXT_REDIRECT:/onboarding',
+		);
+
+		expect(redirect).toHaveBeenCalledWith('/onboarding');
 	});
 
 	it('throws when the profile query fails', async () => {
@@ -148,6 +174,24 @@ describe('DashboardPage', () => {
 
 		await expect(DashboardPage()).rejects.toThrow(
 			'Unable to load your profile.',
+		);
+	});
+
+	it('throws when the profile cannot be found', async () => {
+		mockGetClaims.mockResolvedValue({
+			data: {
+				claims: { sub: 'test-user-id' },
+			},
+			error: null,
+		});
+
+		mockMaybeSingle.mockResolvedValue({
+			data: null,
+			error: null,
+		});
+
+		await expect(DashboardPage()).rejects.toThrow(
+			'Your profile could not be found.',
 		);
 	});
 });

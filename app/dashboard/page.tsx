@@ -32,6 +32,8 @@ export default async function DashboardPage() {
 		redirect('/onboarding');
 	}
 
+	const currencyCode = profile.currency_code ?? 'USD';
+
 	return (
 		<main className="min-h-screen p-6">
 			<div className="mx-auto max-w-5xl">
@@ -45,7 +47,7 @@ export default async function DashboardPage() {
 				</p>
 
 				<p className="mt-6 text-sm">
-					Preferred currency: {profile.currency_code}
+					Preferred currency: {currencyCode}
 				</p>
 
 				<div className="mt-8">

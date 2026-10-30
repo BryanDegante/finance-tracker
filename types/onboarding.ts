@@ -1,9 +1,6 @@
 export type OnboardingData = {
-	primaryGoal: string;
 	fullName: string;
 	startingBalance: string;
-	income: string;
-	appMode: string;
 	theme: 'light' | 'dark';
 };
 

@@ -90,46 +90,7 @@ export default function ProfileStep({
 					</div>
 				</div>
 
-				{/* Monthly Income */}
-				<div className="space-y-2">
-					<label
-						htmlFor="income"
-						className="block text-sm font-semibold text-text-primary"
-					>
-						Monthly income
-						<span className="ml-2 text-xs font-normal text-text-muted">
-							Optional
-						</span>
-					</label>
-
-					<p className="text-xs leading-relaxed text-text-muted">
-						Your approximate income after taxes each month.
-					</p>
-
-					<div className="relative">
-						<span
-							aria-hidden="true"
-							className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-text-muted"
-						>
-							$
-						</span>
-
-						<input
-							id="income"
-							name="income"
-							type="number"
-							inputMode="decimal"
-							min="0"
-							step="0.01"
-							value={data.income}
-							onChange={(event) =>
-								updateData({ income: event.target.value })
-							}
-							placeholder="0.00"
-							className="w-full rounded-xl border border-border bg-card py-3 pl-8 pr-4 text-text-primary transition-colors placeholder:text-text-muted/80 hover:border-border-hover focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-						/>
-					</div>
-				</div>
+			
 			</div>
 
 			<p className="text-xs leading-relaxed text-text-muted">
