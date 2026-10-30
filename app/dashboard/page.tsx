@@ -6,8 +6,8 @@ import { redirect } from 'next/navigation';
 export default async function DashboardPage() {
 	const cookieStore = await cookies();
 	const supabase = createClient(cookieStore);
-	const { data, error } = await supabase.auth.getClaims();
 
+	const { data, error } = await supabase.auth.getClaims();
 	const claims = data?.claims;
 
 	if (error || !claims?.sub) {
@@ -16,7 +16,7 @@ export default async function DashboardPage() {
 
 	const { data: profile, error: profileError } = await supabase
 		.from('profiles')
-		.select('display_name, currency_code')
+		.select('display_name, currency_code, onboarding_completed')
 		.eq('id', claims.sub)
 		.maybeSingle();
 
@@ -24,12 +24,20 @@ export default async function DashboardPage() {
 		throw new Error('Unable to load your profile.');
 	}
 
+	if (!profile) {
+		throw new Error('Your profile could not be found.');
+	}
+
+	if (!profile.onboarding_completed) {
+		redirect('/onboarding');
+	}
+
 	return (
 		<main className="min-h-screen p-6">
 			<div className="mx-auto max-w-5xl">
 				<h1 className="text-2xl font-semibold">
 					Welcome
-					{profile?.display_name ? `, ${profile.display_name}` : ''}
+					{profile.display_name ? `, ${profile.display_name}` : ''}
 				</h1>
 
 				<p className="mt-2 text-sm text-gray-600">
@@ -37,8 +45,9 @@ export default async function DashboardPage() {
 				</p>
 
 				<p className="mt-6 text-sm">
-					Preferred currency: {profile?.currency_code ?? 'USD'}
+					Preferred currency: {profile.currency_code}
 				</p>
+
 				<div className="mt-8">
 					<LogoutButton />
 				</div>
