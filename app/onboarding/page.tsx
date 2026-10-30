@@ -1,7 +1,9 @@
-export default function onboarding() {
-    return (
-        <main>
+import OnBoardingFlow from '@/components/OnBoarding/OnBoardingFlow';
 
-        </main>
-    )
+export default function OnboardingPage() {
+	return (
+		<main className="flex min-h-dvh flex-1 bg-background">
+			<OnBoardingFlow />
+		</main>
+	);
 }
