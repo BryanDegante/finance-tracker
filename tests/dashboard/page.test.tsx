@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import DashboardPage from '@/app/dashboard/page';
+import DashboardPage from '@/app/(app)/dashboard/page';
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
