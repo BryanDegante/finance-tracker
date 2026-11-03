@@ -1,5 +1,8 @@
+'use client';
+
 import Link from "next/link";
 import type { IconType } from "react-icons";
+import { usePathname } from 'next/navigation';
 
 type NavLinkProps = {
   href: string;
@@ -9,9 +12,11 @@ type NavLinkProps = {
 
 export default function NavLink({href,text,icon}:NavLinkProps){
   const Icon = icon;
+  const pathname = usePathname();
+  const isActive = pathname === href;
   return (
-    <Link href={href} className="text-text-primary flex gap-2 sm:gap-4 items-center text-base sm:text-lg px-2 sm:px-3 hover:bg-primary hover:text-text-on-primary font-semibold rounded-cozy-sm">
-      <Icon className="text-xl"/>
+    <Link href={href} className={`text-text-primary flex gap-3  items-center  text-base sm:text-lg  pl-1  font-medium rounded-cozy-sm font-quicksand-decorative ${isActive? 'bg-primary text-text-on-primary': 'hover:bg-primary-light '}`}>
+      <Icon />
       {text}
     </Link>
   )

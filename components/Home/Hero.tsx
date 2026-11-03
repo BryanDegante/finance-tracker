@@ -25,12 +25,12 @@ export default function Hero() {
 						className="inline-flex items-center gap-2 font-quicksand text-2xl font-bold tracking-tight text-text-primary transition-opacity hover:opacity-80 focus-visible:rounded-cozy-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary sm:gap-3 sm:text-3xl"
 					>
 						<Image
-							src="/budgetier.png"
+							src="/budgetier2.png"
 							alt=""
-							width={120}
-							height={120}
+							width={100}
+							height={100}
 							priority
-							className="h-16 w-16 shrink-0 object-contain sm:h-20 sm:w-20 lg:h-24 lg:w-24"
+							className="h-10 w-12 shrink-0 object-contain sm:h-20 sm:w-20 lg:h-24 lg:w-24"
 						/>
 
 						<span>
