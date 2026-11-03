@@ -6,10 +6,13 @@ type AppLayoutProps = {
 };
 
 export default function AppLayout({ children }: AppLayoutProps) {
-  return (
-    <div className="min-h-screen">
-      <SideNav />
+return (
+  <div className="flex min-h-screen">
+    <SideNav />
+
+    <main className="flex-1 min-w-0">
       {children}
-    </div>
-  );
+    </main>
+  </div>
+);
 }
