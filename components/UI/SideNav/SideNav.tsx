@@ -4,6 +4,7 @@ import Image from 'next/image';
 import NavLink from './NavLink';
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
+import { logoutAction } from '@/app/actions/auth';
 
 import {
   MdAccountBalance,
@@ -36,7 +37,7 @@ export default function SideNav() {
       duration: 0.35,
       ease: 'power2.inOut',
       overwrite: 'auto',
-      force3D: true, 
+      force3D: true,
     });
 
     return () => {
@@ -50,10 +51,16 @@ export default function SideNav() {
       ref={sidebarRef}
       onMouseEnter={() => setIsExpanded(true)}
       onMouseLeave={() => setIsExpanded(false)}
+      onFocus={() => setIsExpanded(true)}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          setIsExpanded(false);
+        }
+      }}
       className='
-        flex flex-col h-screen sticky top-0
-        py-8 px-3 border-r border-border
-        bg-background w-20
+       hidden md:flex flex-col h-screen sticky top-0
+    py-8 px-3 border-r border-border
+    bg-background w-20 shrink-0
       [--sidebar-expanded-width:13rem]
 			lg:[--sidebar-expanded-width:14rem]
       '>
@@ -138,12 +145,20 @@ export default function SideNav() {
           icon={MdOutlineSettings}
           isExpanded={isExpanded}
         />
-        <NavLink
-          href='/'
-          text='Logout'
-          icon={MdOutlineLogout}
-          isExpanded={isExpanded}
-        />
+        <form action={logoutAction}>
+          <button
+            type='submit'
+            className='flex items-center  w-full px-3 py-2 rounded-cozy-sm text-text-primary hover:bg-primary-light transition-colors cursor-pointer'>
+            <MdOutlineLogout className='shrink-0 text-xl' />
+
+            <div
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${
+                isExpanded ? 'opacity-100 w-auto ml-3' : 'opacity-0 w-0 ml-0'
+              }`}>
+              <span className='whitespace-nowrap'>Logout</span>
+            </div>
+          </button>
+        </form>
       </div>
     </aside>
   );
