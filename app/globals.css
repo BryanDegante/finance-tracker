@@ -60,6 +60,46 @@
   --shadow-cozy-lg: 0 12px 32px -8px rgba(73, 55, 46, 0.12);
 }
 
+/* Dark Mode */
+.dark {
+  /* Backgrounds & Surfaces */
+  --color-background: #231c18;
+  --color-card: #322721;
+  --color-card-muted: #3f322b;
+  --color-surface-tint: #4c3d34;
+
+  /* Primary */
+  --color-primary: #e8b7c8;
+  --color-primary-hover: #f4d1dc;
+  --color-primary-light: #422a33;
+
+  /* Secondary */
+  --color-secondary: #a3b18a;
+  --color-secondary-hover: #b8c59e;
+  --color-secondary-light: #283324;
+
+  /* Text */
+  --color-text-primary: #f4efe6;
+  --color-text-secondary: #b8aca2;
+  --color-text-muted: #8f837a;
+  --color-text-on-primary: #231c18;
+
+  /* Borders */
+  --color-border: #4a3c34;
+  --color-border-hover: #5c4b43;
+
+  /* Financial & Status */
+  --color-success: #73a178;
+  --color-success-bg: #253327;
+  --color-danger: #d66878;
+  --color-danger-bg: #3b2326;
+  --color-warning: #e6b369;
+
+  /* Shadows */
+  --shadow-cozy: 0 4px 16px -4px rgba(0, 0, 0, 0.4);
+  --shadow-cozy-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+}
+
 html,
 body {
   min-height: 100%;

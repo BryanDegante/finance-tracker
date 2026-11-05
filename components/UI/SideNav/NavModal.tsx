@@ -29,26 +29,21 @@ export default function NavModal() {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Handle body scroll locking, keyboard navigation and focus management
   useEffect(() => {
     if (!isOpen) return;
 
     const previousOverflow = document.body.style.overflow;
 
-    // Prevent background scrolling
     document.body.style.overflow = 'hidden';
 
-    // Move focus into the drawer
     closeButtonRef.current?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Close drawer with Escape
       if (event.key === 'Escape') {
         setIsOpen(false);
         return;
       }
 
-      // Trap keyboard focus inside the drawer
       if (event.key === 'Tab') {
         const focusableElements =
           sidebarRef.current?.querySelectorAll<HTMLElement>(
@@ -88,7 +83,6 @@ export default function NavModal() {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener('keydown', handleKeyDown);
 
-      // Restore focus to the hamburger button
       menuButtonRef.current?.focus();
     };
   }, [isOpen]);
@@ -141,7 +135,6 @@ export default function NavModal() {
             className="fixed inset-0 bg-card-muted/50 transition-opacity duration-300 animate-in fade-in"
           />
 
-          {/* Drawer Panel */}
           <div
             ref={sidebarRef}
             id="mobile-navigation-dialog"
@@ -150,7 +143,7 @@ export default function NavModal() {
             aria-labelledby="mobile-navigation-title"
             className="relative z-10 flex flex-col w-4/5 max-w-xs h-full bg-background border-r border-border p-6 shadow-xl overflow-y-auto animate-in slide-in-from-left duration-300 ease-out"
           >
-            {/* Drawer Header */}
+            {/* Header */}
             <div className="flex items-center justify-between mb-8 shrink-0">
               <div className="flex items-center gap-2">
                 <figure className="w-7 h-7 relative shrink-0">

@@ -28,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
 	return (
 		<html
 			lang="en"
-			className={`${nunitoSans.variable} ${nunito.variable} ${quicksand.variable} h-full antialiased`}
+			className={`${nunitoSans.variable} ${nunito.variable} ${quicksand.variable} h-full antialiased dark`}
 		>
 			<body className="min-h-full flex flex-col">
 				<ReduxProvider>
