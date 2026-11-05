@@ -9,7 +9,7 @@ export default function Mode({ data, updateData }: OnboardingStepProps) {
 		<div className="flex flex-col gap-7">
 			{/* Heading */}
 			<div className="space-y-2">
-				<h2 className="font-quicksand text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+				<h2 className="font-nunito-titles text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
 					Make yourself at home.
 				</h2>
 
@@ -42,7 +42,7 @@ export default function Mode({ data, updateData }: OnboardingStepProps) {
 						</div>
 
 						<div className="min-w-0">
-							<p className="font-quicksand font-bold text-text-primary">
+							<p className="font-nunito-titles font-bold text-text-primary">
 								Light Mode
 							</p>
 
@@ -85,7 +85,7 @@ export default function Mode({ data, updateData }: OnboardingStepProps) {
 						</div>
 
 						<div className="min-w-0">
-							<p className="font-quicksand font-bold text-text-primary">
+							<p className="font-nunito-titles font-bold text-text-primary">
 								Dark Mode
 							</p>
 

@@ -17,7 +17,7 @@ export default function Completion({ data }: { data: OnboardingData }) {
 					Setup complete
 				</p>
 
-				<h2 className="font-quicksand text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+				<h2 className="font-nunito-titles text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
 					You’re all set
 					{data.fullName.trim() ? `, ${data.fullName.trim()}` : ''}!
 				</h2>

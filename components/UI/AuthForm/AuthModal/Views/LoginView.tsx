@@ -20,7 +20,7 @@ export default function LoginView() {
 		<div>
 			{/* Heading */}
 			<div className="mb-6">
-				<h3 className="mb-1 font-quicksand-decorative text-lg font-bold text-text-primary sm:text-xl">
+				<h3 className="mb-1 font-nunito-titles text-lg font-bold text-text-primary sm:text-xl">
 					Welcome Back
 				</h3>
 

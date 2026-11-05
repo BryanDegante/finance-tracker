@@ -26,7 +26,7 @@ export default function NavLink({
     <Link
       href={href}
       aria-label={text}
-      className={`text-text-primary flex items-center justify-start text-base sm:text-lg font-medium rounded-cozy-sm font-quicksand-decorative transition-colors py-2.5 px-3 ${
+      className={`text-text-primary flex items-center justify-start text-base sm:text-lg font-medium rounded-cozy-sm font-nunito-titles transition-colors py-2.5 px-3 ${
         isActive ? 'bg-primary text-text-on-primary' : 'hover:bg-primary-light'
       }`}>
       <div className='w-6 h-6 flex items-center justify-center shrink-0'>

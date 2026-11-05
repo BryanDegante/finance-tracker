@@ -117,7 +117,7 @@ export default function NavModal() {
               />
             </figure>
 
-            <span className="font-nunito-titles text-lg text-text-primary font-bold">
+            <span className="font-quicksand-decorative text-lg text-text-primary font-bold">
               Budgetier
             </span>
           </Link>
@@ -158,7 +158,7 @@ export default function NavModal() {
 
                 <span
                   id="mobile-navigation-title"
-                  className="font-nunito-titles text-lg text-text-primary font-bold"
+                  className="font-quicksand-decorative text-lg text-text-primary font-bold"
                 >
                   Budgetier
                 </span>
@@ -253,7 +253,7 @@ export default function NavModal() {
               <form action={logoutAction} className="w-full">
                 <button
                   type="submit"
-                  className="w-full text-text-primary flex items-center justify-start text-base sm:text-lg font-medium rounded-cozy-sm font-quicksand-decorative transition-colors py-2.5 px-3 hover:bg-primary-light"
+                  className="w-full text-text-primary flex items-center justify-start text-base sm:text-lg font-medium rounded-cozy-sm font-nunito-titles transition-colors py-2.5 px-3 hover:bg-primary-light"
                 >
                   <div className="w-6 h-6 flex items-center justify-center shrink-0">
                     <MdOutlineLogout

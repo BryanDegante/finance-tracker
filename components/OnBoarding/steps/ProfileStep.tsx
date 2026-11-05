@@ -8,7 +8,7 @@ export default function ProfileStep({
 		<div className="flex flex-col gap-7">
 			{/* Step Heading */}
 			<div className="space-y-2">
-				<h2 className="font-quicksand text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+				<h2 className="font-nunito-titles text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
 					Let’s personalize your space.
 				</h2>
 

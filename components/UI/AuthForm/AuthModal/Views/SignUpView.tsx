@@ -55,7 +55,7 @@ export default function SignUpView({
 					</svg>
 				</div>
 
-				<h3 className="mb-2 font-quicksand-decorative text-xl font-bold text-text-primary sm:text-2xl">
+				<h3 className="mb-2 font-nunito-titles text-xl font-bold text-text-primary sm:text-2xl">
 					Check your email
 				</h3>
 
@@ -100,7 +100,7 @@ export default function SignUpView({
 		<div>
 			{/* Heading */}
 			<div className="mb-6">
-				<h3 className="mb-1 font-quicksand-decorative text-lg font-bold text-text-primary sm:text-xl">
+				<h3 className="mb-1 font-nunito-titles text-lg font-bold text-text-primary sm:text-xl">
 					Create Your Account
 				</h3>
 

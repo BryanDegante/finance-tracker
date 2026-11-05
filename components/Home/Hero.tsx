@@ -22,7 +22,7 @@ export default function Hero() {
 					<a
 						href="/"
 						aria-label="Budgetier home"
-						className="inline-flex items-center gap-2 font-quicksand text-2xl font-bold tracking-tight text-text-primary transition-opacity hover:opacity-80 focus-visible:rounded-cozy-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary sm:gap-3 sm:text-3xl"
+						className="inline-flex items-center gap-2 font-quicksand-decorative text-2xl font-bold tracking-tight text-text-primary transition-opacity hover:opacity-80 focus-visible:rounded-cozy-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-secondary sm:gap-3 sm:text-3xl"
 					>
 						<Image
 							src="/budgetier2.png"
@@ -55,7 +55,7 @@ export default function Hero() {
 						</div>
 
 						{/* Headline */}
-						<h1 className="max-w-xl font-quicksand text-4xl font-bold leading-[1.12] tracking-tight text-text-primary min-[400px]:text-5xl sm:text-6xl lg:text-5xl xl:text-7xl">
+						<h1 className="max-w-xl font-quicksand-decorative text-4xl font-bold leading-[1.12] tracking-tight text-text-primary min-[400px]:text-5xl sm:text-6xl lg:text-5xl xl:text-7xl">
 							Your finances.
 							<br />
 							Your pace.
@@ -101,7 +101,7 @@ export default function Hero() {
 							{/*  Header */}
 							<div className="mb-5 flex items-center justify-between gap-3">
 								<div>
-									<p className="font-quicksand text-lg font-bold text-text-primary sm:text-xl">
+									<p className="font-nunito-titles text-lg font-bold text-text-primary sm:text-xl">
 										Your overview
 									</p>
 									<p className="mt-1 text-xs text-text-muted sm:text-sm">
@@ -122,7 +122,7 @@ export default function Hero() {
 											Total monthly savings
 										</p>
 
-										<p className="mt-2 font-quicksand text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
+										<p className="mt-2 font-quicksand-decorative text-2xl font-bold tracking-tight text-text-primary sm:text-3xl">
 											$2,450.00
 										</p>
 									</div>
@@ -175,7 +175,7 @@ export default function Hero() {
 							{/* Recent Activity */}
 							<div className="mt-6">
 								<div className="mb-3 flex items-center justify-between gap-3">
-									<p className="font-quicksand text-base font-bold text-text-primary">
+									<p className="font-nunito-titles text-base font-bold text-text-primary">
 										Recent activity
 									</p>
 

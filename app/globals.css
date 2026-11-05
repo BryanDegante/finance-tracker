@@ -2,8 +2,11 @@
 
 @theme {
   /* Fonts */
+  /* p, descriptions */
   --font-sans-text: var(--font-nunito-sans);
+  /* Section headings, card titles, subheadings, modal titles, and navigation */
   --font-nunito-titles: var(--font-nunito);
+  /* Brand logos, massive hero headlines (h1), and major statistic callouts (like totals or balances). */
   --font-quicksand-decorative: var(--font-quicksand);
 
   /* Backgrounds & Surfaces */

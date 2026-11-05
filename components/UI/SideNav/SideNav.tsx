@@ -79,7 +79,7 @@ export default function SideNav() {
           className={`overflow-hidden transition-all duration-300 ease-in-out ${
             isExpanded ? 'opacity-100 w-auto ml-3' : 'opacity-0 w-0 ml-0'
           }`}>
-          <h1 className='font-nunito-titles text-lg sm:text-xl text-text-primary font-bold whitespace-nowrap'>
+          <h1 className='font-quicksand-decorative text-lg sm:text-xl text-text-primary font-bold whitespace-nowrap'>
             Budgetier
           </h1>
         </div>
@@ -148,7 +148,7 @@ export default function SideNav() {
         <form action={logoutAction}>
           <button
             type='submit'
-            className='flex items-center  w-full px-3 py-2 rounded-cozy-sm text-text-primary hover:bg-primary-light transition-colors cursor-pointer'>
+            className='flex items-center w-full px-3 py-2 rounded-cozy-sm text-text-primary hover:bg-primary-light transition-colors cursor-pointer font-nunito-titles'>
             <MdOutlineLogout className='shrink-0 text-xl' />
 
             <div
