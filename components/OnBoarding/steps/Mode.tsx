@@ -1,9 +1,31 @@
+
+'use client';
+
 import type { OnboardingStepProps } from '@/types/onboarding';
+import { updateThemeAction } from '@/app/actions/theme';
 import { CiDark, CiLight } from 'react-icons/ci';
 import { FaCheck } from 'react-icons/fa6';
 
 export default function Mode({ data, updateData }: OnboardingStepProps) {
 	const selectedTheme = data.theme;
+
+	const handleThemeChange = async (theme: 'light' | 'dark') => {
+		// Update onboarding state
+		updateData({ theme });
+
+		// Apply theme immediately
+		document.documentElement.classList.toggle(
+			'dark',
+			theme === 'dark',
+		);
+
+		// Persist preference in cookie
+		try {
+			await updateThemeAction(theme);
+		} catch (error) {
+			console.error('Failed to save theme preference:', error);
+		}
+	};
 
 	return (
 		<div className="flex flex-col gap-7">
@@ -63,7 +85,7 @@ export default function Mode({ data, updateData }: OnboardingStepProps) {
 						name="theme"
 						value="light"
 						checked={selectedTheme === 'light'}
-						onChange={() => updateData({ theme: 'light' })}
+						onChange={() => handleThemeChange('light')}
 						className="sr-only"
 					/>
 				</label>
@@ -106,7 +128,7 @@ export default function Mode({ data, updateData }: OnboardingStepProps) {
 						name="theme"
 						value="dark"
 						checked={selectedTheme === 'dark'}
-						onChange={() => updateData({ theme: 'dark' })}
+						onChange={() => handleThemeChange('dark')}
 						className="sr-only"
 					/>
 				</label>
@@ -120,9 +142,8 @@ export default function Mode({ data, updateData }: OnboardingStepProps) {
 				/>
 
 				<p className="text-xs leading-relaxed text-text-muted">
-					Your preference will be saved with your account. Theme
-					switching will take effect once appearance settings are
-					implemented.
+					Your appearance preference is applied immediately and saved
+					on this device. You can change it anytime in your settings.
 				</p>
 			</div>
 		</div>

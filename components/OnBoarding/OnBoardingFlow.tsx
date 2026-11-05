@@ -12,16 +12,22 @@ import type { OnboardingData } from '@/types/onboarding';
 
 const TOTAL_STEPS = 4;
 
-export default function OnBoardingFlow() {
+type OnBoardingFlowProps = {
+	initialTheme: 'light' | 'dark';
+};
+
+export default function OnBoardingFlow({
+	initialTheme,
+}: OnBoardingFlowProps) {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isPending, startTransition] = useTransition();
 	const [submitError, setSubmitError] = useState<string | null>(null);
 
-	const [formData, setFormData] = useState<OnboardingData>({
-		fullName: '',
-		startingBalance: '',
-		theme: 'light',
-	});
+const [formData, setFormData] = useState<OnboardingData>({
+	fullName: '',
+	startingBalance: '',
+	theme: initialTheme,
+});
 
 	const updateData = (fields: Partial<OnboardingData>) => {
 		setFormData((prev) => ({
@@ -53,8 +59,6 @@ export default function OnBoardingFlow() {
 					setSubmitError(result.error);
 				}
 			} catch (error) {
-				// Next.js redirects use a special thrown signal.
-				// Re-throw it so successful onboarding can redirect normally.
 				if (
 					error !== null &&
 					typeof error === 'object' &&
