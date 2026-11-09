@@ -148,7 +148,7 @@ export default function SideNav() {
         <form action={logoutAction}>
           <button
             type='submit'
-            className='flex items-center w-full px-3 py-2 rounded-cozy-sm text-text-primary hover:bg-primary-light transition-colors cursor-pointer font-nunito-titles'>
+            className='flex items-center w-full px-3 py-2 rounded-cozy-sm text-text-primary font-medium text-base sm:text-lg hover:bg-primary-light transition-colors cursor-pointer font-nunito-titles'>
             <MdOutlineLogout className='shrink-0 text-xl' />
 
             <div
