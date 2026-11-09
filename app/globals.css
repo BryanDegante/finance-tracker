@@ -2,107 +2,302 @@
 
 @theme {
   /* Fonts */
-  /* p, descriptions */
   --font-sans-text: var(--font-nunito-sans);
-  /* Section headings, card titles, subheadings, modal titles, and navigation */
   --font-nunito-titles: var(--font-nunito);
-  /* Brand logos, massive hero headlines (h1), and major statistic callouts (like totals or balances). */
   --font-quicksand-decorative: var(--font-quicksand);
 
-  /* Backgrounds & Surfaces */
+  /* Default Theme Tokens (Light Mode Defaults) */
   --color-background: #faf6f0;
   --color-card: #ffffff;
   --color-card-muted: #ede3d5;
   --color-surface-tint: #f4ece1;
-  /* Soft neutral highlight for hovered rows or active tab panels */
 
-  /* Primary actions (Soft Blush Pink) */
+  /* Primary */
   --color-primary: #e8b7c8;
   --color-primary-hover: #d9a0b4;
   --color-primary-light: #faeaf0;
-  /* Ultra-soft background tint for active badges/tags */
 
-  /* Secondary actions (Sage Green) */
+  /* Secondary */
   --color-secondary: #a3b18a;
   --color-secondary-hover: #8f9f76;
   --color-secondary-light: #eef2ea;
-  /* Soft green tint for financial income cards */
 
-  /* Text & Typography */
+  /* Text */
   --color-text-primary: #49372e;
   --color-text-secondary: #795548;
   --color-text-muted: #8c8179;
   --color-text-on-primary: #3d2922;
-  /* High-contrast brown text for on top of pink buttons */
 
-  /* Borders & Dividers */
+  /* Borders */
   --color-border: #e4d8cc;
   --color-border-hover: #cbb9aa;
 
-  /* Financial & Status Indicators */
+  /* Status */
   --color-success: #547a58;
   --color-success-bg: #eaf1eb;
-  /* Soft green background tint for savings goals */
   --color-danger: #b94d5c;
   --color-danger-bg: #f9ebeb;
-  /* Soft pink/red background tint for expense badges */
   --color-warning: #d99b53;
-  /* Soft amber for pending transactions or budget warnings */
 
-  /* Custom Radii for Cozy Feel */
+  /* Radii */
   --radius-cozy-sm: 0.75rem;
-  /*  12px */
   --radius-cozy: 1.25rem;
-  /*  20px - Great for cards & modals */
   --radius-cozy-lg: 1.75rem;
-  /*  28px - Great for main hero containers */
 
-  /* Warm Custom Shadows */
+  /* Shadows */
   --shadow-cozy-sm: 0 2px 8px -2px rgba(73, 55, 46, 0.06);
   --shadow-cozy: 0 4px 16px -4px rgba(73, 55, 46, 0.08);
   --shadow-cozy-lg: 0 12px 32px -8px rgba(73, 55, 46, 0.12);
 }
 
-/* Dark Mode */
-.dark {
-  /* Backgrounds & Surfaces */
-  --color-background: #231c18;
-  --color-card: #322721;
-  --color-card-muted: #3f322b;
-  --color-surface-tint: #4c3d34;
+/* -------------------------------------------------------------------------- */
+/* Theme Schemes                                                              */
+/* -------------------------------------------------------------------------- */
 
-  /* Primary */
+/* 1. Light Theme */
+.light {
+  color-scheme: light;
+
+  --color-background: #faf6f0;
+  --color-card: #ffffff;
+  --color-card-muted: #ede3d5;
+  --color-surface-tint: #f4ece1;
+
+  --color-primary: #e8b7c8;
+  --color-primary-hover: #d9a0b4;
+  --color-primary-light: #faeaf0;
+
+  --color-secondary: #a3b18a;
+  --color-secondary-hover: #8f9f76;
+  --color-secondary-light: #eef2ea;
+
+  --color-text-primary: #49372e;
+  --color-text-secondary: #795548;
+  --color-text-muted: #8c8179;
+  --color-text-on-primary: #3d2922;
+
+  --color-border: #e4d8cc;
+  --color-border-hover: #cbb9aa;
+
+  --color-success: #547a58;
+  --color-success-bg: #eaf1eb;
+  --color-danger: #b94d5c;
+  --color-danger-bg: #f9ebeb;
+  --color-warning: #d99b53;
+
+  --shadow-cozy: 0 4px 16px -4px rgba(73, 55, 46, 0.08);
+  --shadow-cozy-lg: 0 12px 32px -8px rgba(73, 55, 46, 0.12);
+}
+
+/* 2. Dark Theme (Cozy Espresso) */
+.dark {
+  color-scheme: dark;
+
+  /* Deep Espresso & Warm Dark Brown Surfaces */
+  --color-background: #1e1714;
+  --color-card: #2a201b;
+  --color-card-muted: #362a24;
+  --color-surface-tint: #42342e;
+
+  /* Primary Accent: Soft Blush Pink */
   --color-primary: #e8b7c8;
   --color-primary-hover: #f4d1dc;
   --color-primary-light: #422a33;
 
-  /* Secondary */
+  /* Secondary Accent: Muted Sage Green */
   --color-secondary: #a3b18a;
   --color-secondary-hover: #b8c59e;
   --color-secondary-light: #283324;
 
-  /* Text */
-  --color-text-primary: #f4efe6;
-  --color-text-secondary: #b8aca2;
-  --color-text-muted: #8f837a;
-  --color-text-on-primary: #231c18;
+  /* Text: Warm Ivory & Soft Warm Gray */
+  --color-text-primary: #f7f2eb;
+  --color-text-secondary: #c2b5ab;
+  --color-text-muted: #94867d;
+  --color-text-on-primary: #1e1714;
 
-  /* Borders */
-  --color-border: #4a3c34;
-  --color-border-hover: #5c4b43;
+  /* Borders: Warm Dark Outline */
+  --color-border: #42342e;
+  --color-border-hover: #57463f;
 
-  /* Financial & Status */
+  /* Financial & Status Indicators */
   --color-success: #73a178;
-  --color-success-bg: #253327;
+  --color-success-bg: #223325;
   --color-danger: #d66878;
-  --color-danger-bg: #3b2326;
+  --color-danger-bg: #3d2226;
   --color-warning: #e6b369;
 
-  /* Shadows */
-  --shadow-cozy: 0 4px 16px -4px rgba(0, 0, 0, 0.4);
-  --shadow-cozy-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.6);
+  /* Soft, Deep Dark Shadows */
+  --shadow-cozy: 0 4px 16px -4px rgba(0, 0, 0, 0.5);
+  --shadow-cozy-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.7);
+}
+/* 3. Deep Forest / Woodland Grove  */
+.forest {
+  color-scheme: dark;
+
+  /* Deep Pine & Canopy Backgrounds */
+  --color-background: #121b16;
+  --color-card: #1a2620;
+  --color-card-muted: #23332b;
+  --color-surface-tint: #2d4036;
+
+  /* Primary Accent: Earthy Terracotta / Cedar */
+  --color-primary: #d48b7b;
+  --color-primary-hover: #e09d8e;
+  --color-primary-light: #382420;
+
+  /* Secondary Accent: Fresh Pine / Moss Green */
+  --color-secondary: #769b7c;
+  --color-secondary-hover: #88ac8e;
+  --color-secondary-light: #1f2f24;
+
+  /* Text: Creamy Birch & Soft Fern Slate */
+  --color-text-primary: #e8f0e9;
+  --color-text-secondary: #a3b8a7;
+  --color-text-muted: #758a7a;
+  --color-text-on-primary: #121b16;
+
+  /* Borders: Deep Woodland Bark */
+  --color-border: #2e4237;
+  --color-border-hover: #3d5648;
+
+  /* Financial & Status Indicators */
+  --color-success: #6ba879;
+  --color-success-bg: #1c3021;
+  --color-danger: #d46b73;
+  --color-danger-bg: #3a2225;
+  --color-warning: #dbab63;
+
+  /* Forest Shadows */
+  --shadow-cozy: 0 4px 16px -4px rgba(0, 0, 0, 0.5);
+  --shadow-cozy-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.7);
 }
 
+/* 4.  Deep Ocean / Coastal Tide */
+.ocean {
+  color-scheme: dark;
+
+  /* Deep Oceanic Surfaces */
+  --color-background: #151e24;
+  --color-card: #1e2930;
+  --color-card-muted: #28363f;
+  --color-surface-tint: #32444f;
+
+  /* Primary Accent: Soft Aqua / Ocean Blue */
+  --color-primary: #7ac1eb;
+  --color-primary-hover: #97d0f0;
+  --color-primary-light: #203542;
+
+  /* Secondary Accent: Seafoam / Sea Glass Green */
+  --color-secondary: #7fb5a7;
+  --color-secondary-hover: #94c7ba;
+  --color-secondary-light: #1f332e;
+
+  /* Text: Clean Coastal Frost & Muted Waves */
+  --color-text-primary: #e6f1f5;
+  --color-text-secondary: #9cb5c2;
+  --color-text-muted: #728a96;
+  --color-text-on-primary: #12191f;
+
+  /* Borders: Deep Sea Slate */
+  --color-border: #2c3e4a;
+  --color-border-hover: #3d5261;
+
+  /* Financial & Status Indicators */
+  --color-success: #67b094;
+  --color-success-bg: #1d332b;
+  --color-danger: #d4757c;
+  --color-danger-bg: #3b2326;
+  --color-warning: #e0b06b;
+
+  /* Oceanic Shadows */
+  --shadow-cozy: 0 4px 16px -4px rgba(0, 0, 0, 0.45);
+  --shadow-cozy-lg: 0 12px 32px -8px rgba(0, 0, 0, 0.65);
+}
+/* 5. Honey Warmth / Amber Wood (.honey) */
+.honey {
+  color-scheme: light;
+
+  /* Warm Cream & Terracotta Tinted Surfaces */
+  --color-background: #fff8f0;
+  --color-card: #ffffff;
+  --color-card-muted: #f5ebd9;
+  --color-surface-tint: #faefdf;
+
+  /* Primary Accent: Rich Honey Orange & Amber */
+  --color-primary: #df8826;
+  --color-primary-hover: #c9751d;
+  --color-primary-light: #ffddb0;
+
+  /* Secondary Accent: Toasted Caramel */
+  --color-secondary: #c88a4c;
+  --color-secondary-hover: #b4773d;
+  --color-secondary-light: #fbf3eb;
+
+  /* Text: Rich Deep Cocoa & Warm Brown */
+  --color-text-primary: #3d2217;
+  --color-text-secondary: #6e4332;
+  --color-text-muted: #8c6150;
+  --color-text-on-primary: #ffffff;
+
+  /* Borders: Warm Honey Sandstone */
+  --color-border: #ebd7c1;
+  --color-border-hover: #d6beaa;
+
+  /* Financial & Status Indicators */
+  --color-success: #588157;
+  --color-success-bg: #eaf1eb;
+  --color-danger: #c94a29;
+  --color-danger-bg: #faebe7;
+  --color-warning: #e09f3e;
+
+  /* Cozy Warm Shadows */
+  --shadow-cozy: 0 4px 16px -4px rgba(61, 34, 23, 0.1);
+  --shadow-cozy-lg: 0 12px 32px -8px rgba(61, 34, 23, 0.15);
+}
+
+/* 6. New Theme Scheme: Brick / Terracotta Earth (.brick) */
+.brick {
+  color-scheme: dark;
+
+  /* Deep Warm Burgundy & Clay Backgrounds */
+  --color-background: #201214;
+  --color-card: #2e1a1d;
+  --color-card-muted: #3c2226;
+  --color-surface-tint: #4b2b30;
+
+  /* Primary Accent: Vibrant Crimson Rose */
+  --color-primary: #e55364;
+  --color-primary-hover: #f06a7a;
+  --color-primary-light: #481d22;
+
+  /* Secondary Accent: Warm Sandstone / Gold */
+  --color-secondary: #d99a73;
+  --color-secondary-hover: #e8ab86;
+  --color-secondary-light: #36241b;
+
+  /* Text: Warm Cream & Soft Rose Slate */
+  --color-text-primary: #fbeee8;
+  --color-text-secondary: #d4b5ac;
+  --color-text-muted: #a68981;
+  --color-text-on-primary: #ffffff;
+
+  /* Borders: Deep Crimson Outline */
+  --color-border: #4d2a2f;
+  --color-border-hover: #63363d;
+
+  /* Financial & Status Indicators */
+  --color-success: #65ab7b;
+  --color-success-bg: #1a3022;
+  --color-danger: #f24e5b;
+  --color-danger-bg: #441c20;
+  --color-warning: #e09f3e;
+
+  /* Deep Crimson Shadows */
+  --shadow-cozy: 0 4px 16px -4px rgba(32, 18, 20, 0.55);
+  --shadow-cozy-lg: 0 12px 32px -8px rgba(32, 18, 20, 0.75);
+}
+
+/* Base Styles */
 html,
 body {
   min-height: 100%;

@@ -2,12 +2,10 @@
 
 import { cookies } from 'next/headers';
 import { createClient } from '@/utils/supabase/server';
-
-type Theme = 'light' | 'dark';
+import { isTheme, type Theme } from '@/types/theme';
 
 export async function updateThemeAction(theme: Theme) {
-  // Validate the value at runtime
-  if (theme !== 'light' && theme !== 'dark') {
+  if (!isTheme(theme)) {
     throw new Error('Invalid theme');
   }
 
