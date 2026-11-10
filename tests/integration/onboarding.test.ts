@@ -1,4 +1,3 @@
-
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { loadEnv } from 'vite';
@@ -7,196 +6,254 @@ const env = loadEnv('development', process.cwd(), '');
 
 const supabaseUrl = env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
 const testEmail = env.SUPABASE_TEST_EMAIL;
 const testPassword = env.SUPABASE_TEST_PASSWORD;
 
 if (!supabaseUrl || !supabaseKey || !testEmail || !testPassword) {
-  throw new Error(
-    'Missing Supabase integration test environment variables.',
-  );
+	throw new Error(
+		'Missing Supabase integration test environment variables. ' +
+			'Configure the test account in .env.local.',
+	);
 }
 
-const supabase: SupabaseClient = createClient(
-  supabaseUrl,
-  supabaseKey,
-  {
-    auth: {
-      storageKey: 'budgetier-onboarding-integration-test',
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
-    },
-  },
-);
+const supabase: SupabaseClient = createClient(supabaseUrl, supabaseKey, {
+	auth: {
+		storageKey: 'budgetier-onboarding-integration-test',
+		persistSession: false,
+		autoRefreshToken: false,
+		detectSessionInUrl: false,
+	},
+});
 
 const anonymousSupabase: SupabaseClient = createClient(
-  supabaseUrl,
-  supabaseKey,
-  {
-    auth: {
-      storageKey: 'budgetier-anonymous-integration-test',
-      persistSession: false,
-      autoRefreshToken: false,
-      detectSessionInUrl: false,
-    },
-  },
+	supabaseUrl,
+	supabaseKey,
+	{
+		auth: {
+			storageKey: 'budgetier-anonymous-integration-test',
+			persistSession: false,
+			autoRefreshToken: false,
+			detectSessionInUrl: false,
+		},
+	},
 );
 
-const testUserId = '4488f5bc-f77c-4559-8d00-ac61ef6d8f51';
+let testUserId = '';
 
 describe('complete_onboarding integration tests', () => {
-  beforeAll(async () => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: testEmail,
-      password: testPassword,
-    });
+	beforeAll(async () => {
+		// Authenticate the dedicated onboarding test account.
+		const { error: signInError } = await supabase.auth.signInWithPassword({
+			email: testEmail!,
+			password: testPassword!,
+		});
 
-    if (error) {
-      throw new Error(
-        `Test user authentication failed: ${error.message}`,
-      );
-    }
+		if (signInError) {
+			throw new Error(
+				`Test user authentication failed: ${signInError.message}`,
+			);
+		}
 
-    const { data, error: userError } = await supabase.auth.getUser();
+		// Retrieve the actual authenticated user's ID.
+		const { data: userData, error: userError } =
+			await supabase.auth.getUser();
 
-    if (userError || data.user?.id !== testUserId) {
-      throw new Error(
-        'Authenticated user does not match the designated test user.',
-      );
-    }
-  });
+		if (userError || !userData.user) {
+			throw new Error(
+				'Could not verify the identity of the onboarding test user.',
+			);
+		}
 
-  afterAll(async () => {
-    await supabase.auth.signOut();
-    await anonymousSupabase.auth.signOut();
-  });
+		testUserId = userData.user.id;
 
-  it('rejects unauthenticated onboarding requests', async () => {
-    const { data: sessionData } =
-      await anonymousSupabase.auth.getSession();
+		// Verify the test account has completed onboarding.
+		const { data: profile, error: profileError } = await supabase
+			.from('profiles')
+			.select('id, onboarding_completed')
+			.eq('id', testUserId)
+			.single();
 
-    expect(sessionData.session).toBeNull();
+		if (profileError || !profile) {
+			throw new Error(
+				`Could not load the test user's profile: ${profileError?.message}`,
+			);
+		}
 
-    const { error } = await anonymousSupabase.rpc(
-      'complete_onboarding',
-      {
-        p_full_name: 'Unauthorized User',
-        p_starting_balance: 100,
-        p_theme: 'light',
-      },
-    );
+		if (!profile.onboarding_completed) {
+			throw new Error(
+				'The onboarding integration test account must have completed onboarding.',
+			);
+		}
 
-    expect(error).not.toBeNull();
-  });
+		// Verify the expected Main Account exists.
+		const { data: account, error: accountError } = await supabase
+			.from('accounts')
+			.select('id')
+			.eq('user_id', testUserId)
+			.eq('name', 'Main Account')
+			.maybeSingle();
 
-  it('rejects a negative starting balance', async () => {
-    const { error } = await supabase.rpc('complete_onboarding', {
-      p_full_name: 'Integration Test',
-      p_starting_balance: -10,
-      p_theme: 'light',
-    });
+		if (accountError || !account) {
+			throw new Error(
+				'The onboarding integration test account needs a Main Account.',
+			);
+		}
 
-    expect(error).not.toBeNull();
-    expect(error?.message).toContain('Invalid starting balance');
-  });
+		// Make sure the anonymous client has no authenticated session.
+		const { data: anonymousSession } =
+			await anonymousSupabase.auth.getSession();
 
-  it('rejects a balance with more than two decimal places', async () => {
-    const { error } = await supabase.rpc('complete_onboarding', {
-      p_full_name: 'Integration Test',
-      p_starting_balance: 10.123,
-      p_theme: 'light',
-    });
+		if (anonymousSession.session) {
+			throw new Error(
+				'Anonymous integration test client unexpectedly has a session.',
+			);
+		}
+	});
 
-    expect(error).not.toBeNull();
-    expect(error?.message).toContain('Invalid starting balance');
-  });
+	afterAll(async () => {
+		await Promise.all([
+			supabase.auth.signOut(),
+			anonymousSupabase.auth.signOut(),
+		]);
+	});
 
-  it('rejects a balance exceeding the maximum permitted amount', async () => {
-    const { error } = await supabase.rpc('complete_onboarding', {
-      p_full_name: 'Integration Test',
-      p_starting_balance: 10000000000,
-      p_theme: 'light',
-    });
+	// --------------------------------------------------
+	// AUTHENTICATION
+	// --------------------------------------------------
 
-    expect(error).not.toBeNull();
-    expect(error?.message).toContain('Invalid starting balance');
-  });
+	it('rejects unauthenticated onboarding requests', async () => {
+		const { data: sessionData } = await anonymousSupabase.auth.getSession();
 
-  it('rejects a name longer than 60 characters', async () => {
-    const { error } = await supabase.rpc('complete_onboarding', {
-      p_full_name: 'A'.repeat(61),
-      p_starting_balance: 100,
-      p_theme: 'light',
-    });
+		expect(sessionData.session).toBeNull();
 
-    expect(error).not.toBeNull();
-    expect(error?.message).toContain(
-      'Name must be 60 characters or fewer',
-    );
-  });
+		const { error } = await anonymousSupabase.rpc('complete_onboarding', {
+			p_full_name: 'Unauthorized User',
+			p_starting_balance: 100,
+			p_theme: 'light',
+		});
 
-  it('rejects an invalid theme', async () => {
-    const { error } = await supabase.rpc('complete_onboarding', {
-      p_full_name: 'Integration Test',
-      p_starting_balance: 100,
-      p_theme: 'purple',
-    });
+		expect(error).not.toBeNull();
+	});
 
-    expect(error).not.toBeNull();
-    expect(error?.message).toContain('Invalid theme');
-  });
+	// --------------------------------------------------
+	// INPUT VALIDATION
+	// --------------------------------------------------
 
-  it('does not change completed onboarding when called again', async () => {
-    const { data: profileBefore, error: profileBeforeError } =
-      await supabase
-        .from('profiles')
-        .select('display_name, theme, onboarding_completed')
-        .eq('id', testUserId)
-        .single();
+	it('rejects a negative starting balance', async () => {
+		const { error } = await supabase.rpc('complete_onboarding', {
+			p_full_name: 'Integration Test',
+			p_starting_balance: -10,
+			p_theme: 'light',
+		});
 
-    expect(profileBeforeError).toBeNull();
-    expect(profileBefore).not.toBeNull();
-    expect(profileBefore?.onboarding_completed).toBe(true);
+		expect(error).not.toBeNull();
+		expect(error?.message).toContain('Invalid starting balance');
+	});
 
-    const { data: accountsBefore, error: accountsBeforeError } =
-      await supabase
-        .from('accounts')
-        .select('id, name, account_type, initial_balance')
-        .eq('user_id', testUserId)
-        .eq('name', 'Main Account');
+	it('rejects a balance with more than two decimal places', async () => {
+		const { error } = await supabase.rpc('complete_onboarding', {
+			p_full_name: 'Integration Test',
+			p_starting_balance: 10.123,
+			p_theme: 'light',
+		});
 
-    expect(accountsBeforeError).toBeNull();
-    expect(accountsBefore).toHaveLength(1);
+		expect(error).not.toBeNull();
+		expect(error?.message).toContain('Invalid starting balance');
+	});
 
-    const { error: secondCallError } = await supabase.rpc(
-      'complete_onboarding',
-      {
-        p_full_name: 'Changed Name',
-        p_starting_balance: 999,
-        p_theme: profileBefore?.theme === 'dark' ? 'light' : 'dark',
-      },
-    );
+	it('rejects a balance exceeding the maximum permitted amount', async () => {
+		const { error } = await supabase.rpc('complete_onboarding', {
+			p_full_name: 'Integration Test',
+			p_starting_balance: 10000000000,
+			p_theme: 'light',
+		});
 
-    expect(secondCallError).toBeNull();
+		expect(error).not.toBeNull();
+		expect(error?.message).toContain('Invalid starting balance');
+	});
 
-    const { data: profileAfter, error: profileAfterError } =
-      await supabase
-        .from('profiles')
-        .select('display_name, theme, onboarding_completed')
-        .eq('id', testUserId)
-        .single();
+	it('rejects a name longer than 60 characters', async () => {
+		const { error } = await supabase.rpc('complete_onboarding', {
+			p_full_name: 'A'.repeat(61),
+			p_starting_balance: 100,
+			p_theme: 'light',
+		});
 
-    expect(profileAfterError).toBeNull();
-    expect(profileAfter).toEqual(profileBefore);
+		expect(error).not.toBeNull();
+		expect(error?.message).toContain('Name must be 60 characters or fewer');
+	});
 
-    const { data: accountsAfter, error: accountsAfterError } =
-      await supabase
-        .from('accounts')
-        .select('id, name, account_type, initial_balance')
-        .eq('user_id', testUserId)
-        .eq('name', 'Main Account');
+	it('rejects an invalid theme', async () => {
+		const { error } = await supabase.rpc('complete_onboarding', {
+			p_full_name: 'Integration Test',
+			p_starting_balance: 100,
+			p_theme: 'purple',
+		});
 
-    expect(accountsAfterError).toBeNull();
-    expect(accountsAfter).toEqual(accountsBefore);
-  });
+		expect(error).not.toBeNull();
+		expect(error?.message).toContain('Invalid theme');
+	});
+
+	// --------------------------------------------------
+	// ONBOARDING IDEMPOTENCY
+	// --------------------------------------------------
+
+	it('does not change completed onboarding when called again', async () => {
+		// Capture the original profile.
+		const { data: profileBefore, error: profileBeforeError } =
+			await supabase
+				.from('profiles')
+				.select('display_name, theme, onboarding_completed')
+				.eq('id', testUserId)
+				.single();
+
+		expect(profileBeforeError).toBeNull();
+		expect(profileBefore).not.toBeNull();
+		expect(profileBefore?.onboarding_completed).toBe(true);
+
+		// Capture the original Main Account.
+		const { data: accountsBefore, error: accountsBeforeError } =
+			await supabase
+				.from('accounts')
+				.select('id, name, account_type, initial_balance')
+				.eq('user_id', testUserId)
+				.eq('name', 'Main Account');
+
+		expect(accountsBeforeError).toBeNull();
+		expect(accountsBefore).toHaveLength(1);
+
+		// Attempt to complete onboarding again with different values.
+		const { error: secondCallError } = await supabase.rpc(
+			'complete_onboarding',
+			{
+				p_full_name: 'Changed Name',
+				p_starting_balance: 999,
+				p_theme: profileBefore?.theme === 'dark' ? 'light' : 'dark',
+			},
+		);
+
+		expect(secondCallError).toBeNull();
+
+		// Confirm the profile was not overwritten.
+		const { data: profileAfter, error: profileAfterError } = await supabase
+			.from('profiles')
+			.select('display_name, theme, onboarding_completed')
+			.eq('id', testUserId)
+			.single();
+
+		expect(profileAfterError).toBeNull();
+		expect(profileAfter).toEqual(profileBefore);
+
+		// Confirm the Main Account was not duplicated or changed.
+		const { data: accountsAfter, error: accountsAfterError } =
+			await supabase
+				.from('accounts')
+				.select('id, name, account_type, initial_balance')
+				.eq('user_id', testUserId)
+				.eq('name', 'Main Account');
+
+		expect(accountsAfterError).toBeNull();
+		expect(accountsAfter).toEqual(accountsBefore);
+	});
 });

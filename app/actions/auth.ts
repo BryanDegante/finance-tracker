@@ -313,7 +313,6 @@ export async function resetPasswordAction(
 	const cookieStore = await cookies();
 	const supabase = createClient(cookieStore);
 
-	// Verify that the user has a valid Supabase session.
 	const {
 		data: { user },
 		error: userError,
