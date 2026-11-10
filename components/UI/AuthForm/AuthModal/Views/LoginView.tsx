@@ -8,7 +8,10 @@ const initialState: AuthActionState = {
 	error: null,
 };
 
-export default function LoginView() {
+type LoginViewProps = {
+	onForgotPassword: () => void;
+};
+export default function LoginView({ onForgotPassword }: LoginViewProps) {
 	const [showPassword, setShowPassword] = useState(false);
 
 	const [state, formAction, isPending] = useActionState(
@@ -108,15 +111,14 @@ export default function LoginView() {
 				{/* Forgot Password
 				 //Todo: check if this works
 				*/}
-				
 				<button
 					type="button"
+					onClick={onForgotPassword}
 					disabled={isPending}
 					className="cursor-pointer self-end text-sm font-medium text-text-secondary transition-colors hover:text-secondary-hover focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary disabled:cursor-not-allowed disabled:opacity-60"
 				>
 					Forgot password?
 				</button>
-
 				{/* Submit */}
 				<FormButton
 					label={isPending ? 'Signing in...' : 'Sign In'}

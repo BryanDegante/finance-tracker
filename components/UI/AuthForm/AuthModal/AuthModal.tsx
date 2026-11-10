@@ -8,10 +8,13 @@ import { closeAuthModal } from '@/redux/slices/AuthModalSlice';
 import FormButton from '../FormButton';
 import LoginView from './Views/LoginView';
 import SignUpView from './Views/SignUpView';
+import ForgotPasswordView from './Views/ForgotPasswordView';
 
 export default function AuthModal() {
-  const [view, setView] = useState<'login' | 'signUp'>('login');
-  const [isSignupSuccess, setIsSignupSuccess] = useState(false);
+	type AuthView = 'login' | 'signUp' | 'forgotPassword';
+
+	const [view, setView] = useState<AuthView>('login');
+	const [isSignupSuccess, setIsSignupSuccess] = useState(false);
 	const pathname = usePathname();
 
 	const dispatch = useDispatch();
@@ -141,14 +144,20 @@ export default function AuthModal() {
 					className="flex flex-col gap-4 px-6 py-6"
 				>
 					{view === 'login' ? (
-						<LoginView />
-					) : (
+						<LoginView
+							onForgotPassword={() => setView('forgotPassword')}
+						/>
+					) : view === 'signUp' ? (
 						<SignUpView
 							onSuccessChange={setIsSignupSuccess}
 							onBackToSignIn={() => {
 								setIsSignupSuccess(false);
 								setView('login');
 							}}
+						/>
+					) : (
+						<ForgotPasswordView
+							
 						/>
 					)}
 

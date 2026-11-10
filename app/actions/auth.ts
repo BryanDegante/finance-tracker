@@ -129,9 +129,9 @@ export async function signUpAction(
 		const isHttps = configuredUrl.protocol === 'https:';
 		const isLocalHttp =
 			configuredUrl.protocol === 'http:' &&
-			(configuredUrl.hostname === 'localhost' ||
-				configuredUrl.hostname === '127.0.0.1' ||
-				configuredUrl.hostname === '[::1]');
+			['localhost', '127.0.0.1', '[::1]'].includes(
+				configuredUrl.hostname,
+			);
 
 		if (!isHttps && !isLocalHttp) {
 			throw new Error('The application URL must use HTTPS.');
@@ -197,6 +197,147 @@ export async function signUpAction(
 		error: null,
 		success: genericSignupSuccess,
 	};
+}
+
+// FORGOT PASSWORD
+export async function forgotPasswordAction(
+	_previousState: AuthActionState,
+	formData: FormData,
+): Promise<AuthActionState> {
+	const emailValue = formData.get('email');
+
+	if (typeof emailValue !== 'string') {
+		return { error: 'Please enter a valid email address.' };
+	}
+
+	const email = emailValue.trim();
+
+	if (
+		!email ||
+		email.length > 254 ||
+		!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+	) {
+		return { error: 'Please enter a valid email address.' };
+	}
+
+	const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+	if (!siteUrl) {
+		console.error('NEXT_PUBLIC_SITE_URL is not configured.');
+		return {
+			error: 'Password recovery is temporarily unavailable.',
+		};
+	}
+
+	let redirectTo: string;
+
+	try {
+		const configuredUrl = new URL(siteUrl);
+
+		const isHttps = configuredUrl.protocol === 'https:';
+		const isLocalHttp =
+			configuredUrl.protocol === 'http:' &&
+			['localhost', '127.0.0.1', '[::1]'].includes(
+				configuredUrl.hostname,
+			);
+
+		if (
+			(!isHttps && !isLocalHttp) ||
+			configuredUrl.username ||
+			configuredUrl.password
+		) {
+			throw new Error('Invalid application URL.');
+		}
+
+		const recoveryUrl = new URL('/auth/confirm', configuredUrl);
+		recoveryUrl.searchParams.set('next', '/reset-password');
+
+		redirectTo = recoveryUrl.toString();
+	} catch {
+		console.error('NEXT_PUBLIC_SITE_URL is invalid.');
+		return {
+			error: 'Password recovery is temporarily unavailable.',
+		};
+	}
+
+	const cookieStore = await cookies();
+	const supabase = createClient(cookieStore);
+
+	const { error } = await supabase.auth.resetPasswordForEmail(email, {
+		redirectTo,
+	});
+
+	if (error) {
+		console.error('Password recovery failed:', error.code);
+
+		return {
+			error: 'Unable to process your request. Please try again later.',
+		};
+	}
+
+	return {
+		error: null,
+		success:
+			'If an account exists with that email, you will receive a password reset link.',
+	};
+}
+
+// RESET PASSWORD
+export async function resetPasswordAction(
+	_previousState: AuthActionState,
+	formData: FormData,
+): Promise<AuthActionState> {
+	const passwordValue = formData.get('password');
+	const confirmPasswordValue = formData.get('confirm-password');
+
+	if (
+		typeof passwordValue !== 'string' ||
+		typeof confirmPasswordValue !== 'string'
+	) {
+		return { error: 'Please complete both password fields.' };
+	}
+
+	const password = passwordValue;
+	const confirmPassword = confirmPasswordValue;
+
+	if (password.length < 12 || password.length > 128) {
+		return {
+			error: 'Your password must be between 12 and 128 characters.',
+		};
+	}
+
+	if (password !== confirmPassword) {
+		return { error: "Passwords don't match." };
+	}
+
+	const cookieStore = await cookies();
+	const supabase = createClient(cookieStore);
+
+	// Verify that the user has a valid Supabase session.
+	const {
+		data: { user },
+		error: userError,
+	} = await supabase.auth.getUser();
+
+	if (userError || !user) {
+		return {
+			error: 'Your reset link is invalid or has expired. Please request a new one.',
+		};
+	}
+
+	const { error } = await supabase.auth.updateUser({
+		password,
+	});
+
+	if (error) {
+		console.error('Password update failed:', error.code);
+
+		return {
+			error: 'Unable to update your password. Please try again.',
+		};
+	}
+
+	redirect('/dashboard');
 }
 
 // LOGOUT
