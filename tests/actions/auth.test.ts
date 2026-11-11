@@ -28,11 +28,7 @@ vi.mock('next/navigation', () => ({
 	redirect: mockRedirect,
 }));
 
-import {
-	loginAction,
-	logoutAction,
-	signUpAction,
-} from '@/app/actions/auth';
+import { loginAction, logoutAction, signUpAction } from '@/app/actions/auth';
 
 describe('Authentication actions', () => {
 	beforeEach(() => {
@@ -113,8 +109,7 @@ describe('Authentication actions', () => {
 			const result = await loginAction({ error: null }, formData);
 
 			expect(result).toEqual({
-				error:
-					'Unable to sign in with those credentials. Please check them and try again.',
+				error: 'Unable to sign in with those credentials. Please check them and try again.',
 			});
 
 			expect(mockSignInWithPassword).toHaveBeenCalledWith({
@@ -163,7 +158,6 @@ describe('Authentication actions', () => {
 		function createSignUpForm(overrides: Record<string, string> = {}) {
 			const formData = new FormData();
 
-			formData.set('name', 'Test User');
 			formData.set('email', 'user@example.com');
 			formData.set('password', 'secure-password-123');
 			formData.set('confirm-password', 'secure-password-123');
@@ -189,19 +183,24 @@ describe('Authentication actions', () => {
 			expect(mockSignUp).not.toHaveBeenCalled();
 		});
 
-		it('rejects a name longer than 80 characters', async () => {
-			const formData = createSignUpForm({
-				name: 'A'.repeat(81),
+		it('does not require a name during registration', async () => {
+			mockSignUp.mockResolvedValue({
+				data: { user: null, session: null },
+				error: null,
 			});
 
-			const result = await signUpAction({ error: null }, formData);
+			const result = await signUpAction(
+				{ error: null },
+				createSignUpForm(),
+			);
 
 			expect(result).toEqual({
-				error: 'Your name must be between 1 and 80 characters.',
-				success: null,
+				error: null,
+				success:
+					'If you can register with these details, check your inbox for an email confirmation link.',
 			});
 
-			expect(mockSignUp).not.toHaveBeenCalled();
+			expect(mockSignUp).toHaveBeenCalledOnce();
 		});
 
 		it('rejects an invalid email address', async () => {
@@ -280,8 +279,7 @@ describe('Authentication actions', () => {
 			);
 
 			expect(result).toEqual({
-				error:
-					'Account creation is temporarily unavailable. Please try again later.',
+				error: 'Account creation is temporarily unavailable. Please try again later.',
 				success: null,
 			});
 
@@ -299,8 +297,7 @@ describe('Authentication actions', () => {
 			);
 
 			expect(result).toEqual({
-				error:
-					'Account creation is temporarily unavailable. Please try again later.',
+				error: 'Account creation is temporarily unavailable. Please try again later.',
 				success: null,
 			});
 
@@ -309,22 +306,16 @@ describe('Authentication actions', () => {
 
 		it('sends the correct registration data to Supabase', async () => {
 			mockSignUp.mockResolvedValue({
-				data: { session: null },
+				data: { user: null, session: null },
 				error: null,
 			});
 
-			await signUpAction(
-				{ error: null },
-				createSignUpForm(),
-			);
+			await signUpAction({ error: null }, createSignUpForm());
 
 			expect(mockSignUp).toHaveBeenCalledWith({
 				email: 'user@example.com',
 				password: 'secure-password-123',
 				options: {
-					data: {
-						display_name: 'Test User',
-					},
 					emailRedirectTo: 'http://localhost:3000/auth/confirm',
 				},
 			});
@@ -386,8 +377,7 @@ describe('Authentication actions', () => {
 			);
 
 			expect(result).toEqual({
-				error:
-					'Unable to create your account with those details. Please try again.',
+				error: 'Unable to create your account with those details. Please try again.',
 				success: null,
 			});
 		});

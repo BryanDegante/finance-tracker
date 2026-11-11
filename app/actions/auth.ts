@@ -56,13 +56,11 @@ export async function signUpAction(
 	_previousState: AuthActionState,
 	formData: FormData,
 ): Promise<AuthActionState> {
-	const nameValue = formData.get('name');
 	const emailValue = formData.get('email');
 	const passwordValue = formData.get('password');
 	const confirmPasswordValue = formData.get('confirm-password');
 
 	if (
-		typeof nameValue !== 'string' ||
 		typeof emailValue !== 'string' ||
 		typeof passwordValue !== 'string' ||
 		typeof confirmPasswordValue !== 'string'
@@ -73,17 +71,9 @@ export async function signUpAction(
 		};
 	}
 
-	const name = nameValue.trim();
 	const email = emailValue.trim();
 	const password = passwordValue;
 	const confirmPassword = confirmPasswordValue;
-
-	if (!name || name.length > 80) {
-		return {
-			error: 'Your name must be between 1 and 80 characters.',
-			success: null,
-		};
-	}
 
 	if (
 		!email ||
@@ -163,9 +153,6 @@ export async function signUpAction(
 		email,
 		password,
 		options: {
-			data: {
-				display_name: name,
-			},
 			emailRedirectTo,
 		},
 	});

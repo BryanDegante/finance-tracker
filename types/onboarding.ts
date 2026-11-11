@@ -1,5 +1,6 @@
 export type OnboardingData = {
 	fullName: string;
+	displayName: string;
 	startingBalance: string;
 	theme: 'light' | 'dark';
 };

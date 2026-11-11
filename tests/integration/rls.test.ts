@@ -38,7 +38,7 @@ function createTestClient(storageKey: string): SupabaseClient {
 	});
 }
 
-// Each client has an independent authentication session.
+// Independent authenticated clients.
 const userA = createTestClient('budgetier-rls-integration-user-a');
 const userB = createTestClient('budgetier-rls-integration-user-b');
 
@@ -49,6 +49,16 @@ let accountAId = '';
 let accountBId = '';
 
 let originalProfileA: {
+	id: string;
+	full_name: string | null;
+	display_name: string | null;
+	theme: string;
+	onboarding_completed: boolean;
+} | null = null;
+
+let originalProfileB: {
+	id: string;
+	full_name: string | null;
 	display_name: string | null;
 	theme: string;
 	onboarding_completed: boolean;
@@ -58,6 +68,16 @@ let originalAccountA: {
 	id: string;
 	user_id: string;
 	name: string;
+	account_type: string;
+	initial_balance: number;
+} | null = null;
+
+let originalAccountB: {
+	id: string;
+	user_id: string;
+	name: string;
+	account_type: string;
+	initial_balance: number;
 } | null = null;
 
 describe('Row Level Security integration tests', () => {
@@ -104,17 +124,17 @@ describe('Row Level Security integration tests', () => {
 
 		userBId = userDataB.user.id;
 
-		// Make sure the accounts are actually different.
+		// Ensure both clients represent different users.
 		if (userAId === userBId) {
 			throw new Error(
 				'User A and User B must be different Supabase accounts.',
 			);
 		}
 
-		// Capture User A's original profile.
+		// Capture User A's complete profile.
 		const { data: profileA, error: profileErrorA } = await userA
 			.from('profiles')
-			.select('display_name, theme, onboarding_completed')
+			.select('id, full_name, display_name, theme, onboarding_completed')
 			.eq('id', userAId)
 			.single();
 
@@ -126,10 +146,25 @@ describe('Row Level Security integration tests', () => {
 
 		originalProfileA = profileA;
 
-		// Capture an existing account for User A.
+		// Capture User B's complete profile.
+		const { data: profileB, error: profileErrorB } = await userB
+			.from('profiles')
+			.select('id, full_name, display_name, theme, onboarding_completed')
+			.eq('id', userBId)
+			.single();
+
+		if (profileErrorB || !profileB) {
+			throw new Error(
+				`Could not load User B's profile: ${profileErrorB?.message}`,
+			);
+		}
+
+		originalProfileB = profileB;
+
+		// Capture an existing account belonging to User A.
 		const { data: accountA, error: accountErrorA } = await userA
 			.from('accounts')
-			.select('id, user_id, name')
+			.select('id, user_id, name, account_type, initial_balance')
 			.eq('user_id', userAId)
 			.limit(1)
 			.maybeSingle();
@@ -144,10 +179,10 @@ describe('Row Level Security integration tests', () => {
 		accountAId = accountA.id;
 		originalAccountA = accountA;
 
-		// Capture an existing account for User B.
+		// Capture an existing account belonging to User B.
 		const { data: accountB, error: accountErrorB } = await userB
 			.from('accounts')
-			.select('id')
+			.select('id, user_id, name, account_type, initial_balance')
 			.eq('user_id', userBId)
 			.limit(1)
 			.maybeSingle();
@@ -160,6 +195,7 @@ describe('Row Level Security integration tests', () => {
 		}
 
 		accountBId = accountB.id;
+		originalAccountB = accountB;
 	});
 
 	afterAll(async () => {
@@ -227,15 +263,24 @@ describe('Row Level Security integration tests', () => {
 		expect(errorB).toBeNull();
 		expect(dataB).toEqual([]);
 
-		// Confirm User A's profile was not changed.
-		const { data: profileAfter, error: verifyError } = await userA
+		// Verify neither profile was changed.
+		const { data: profileAfterA, error: verifyErrorA } = await userA
 			.from('profiles')
-			.select('display_name, theme, onboarding_completed')
+			.select('id, full_name, display_name, theme, onboarding_completed')
 			.eq('id', userAId)
 			.single();
 
-		expect(verifyError).toBeNull();
-		expect(profileAfter).toEqual(originalProfileA);
+		const { data: profileAfterB, error: verifyErrorB } = await userB
+			.from('profiles')
+			.select('id, full_name, display_name, theme, onboarding_completed')
+			.eq('id', userBId)
+			.single();
+
+		expect(verifyErrorA).toBeNull();
+		expect(verifyErrorB).toBeNull();
+
+		expect(profileAfterA).toEqual(originalProfileA);
+		expect(profileAfterB).toEqual(originalProfileB);
 	});
 
 	it('prevents users from deleting each other profiles', async () => {
@@ -245,7 +290,6 @@ describe('Row Level Security integration tests', () => {
 			.eq('id', userBId)
 			.select('id');
 
-		// RLS may filter the row or reject the operation.
 		if (errorA) {
 			expect(errorA.code).toBe('42501');
 		} else {
@@ -264,23 +308,24 @@ describe('Row Level Security integration tests', () => {
 			expect(dataB).toEqual([]);
 		}
 
-		// Verify both profiles still exist.
-		const { data: profileA, error: verifyA } = await userA
+		// Verify both profiles still exist and remain unchanged.
+		const { data: profileAfterA, error: verifyErrorA } = await userA
 			.from('profiles')
-			.select('id')
+			.select('id, full_name, display_name, theme, onboarding_completed')
 			.eq('id', userAId)
 			.single();
 
-		const { data: profileB, error: verifyB } = await userB
+		const { data: profileAfterB, error: verifyErrorB } = await userB
 			.from('profiles')
-			.select('id')
+			.select('id, full_name, display_name, theme, onboarding_completed')
 			.eq('id', userBId)
 			.single();
 
-		expect(verifyA).toBeNull();
-		expect(verifyB).toBeNull();
-		expect(profileA?.id).toBe(userAId);
-		expect(profileB?.id).toBe(userBId);
+		expect(verifyErrorA).toBeNull();
+		expect(verifyErrorB).toBeNull();
+
+		expect(profileAfterA).toEqual(originalProfileA);
+		expect(profileAfterB).toEqual(originalProfileB);
 	});
 
 	// --------------------------------------------------
@@ -348,15 +393,24 @@ describe('Row Level Security integration tests', () => {
 		expect(errorB).toBeNull();
 		expect(dataB).toEqual([]);
 
-		// Verify User A's original account remains unchanged.
-		const { data: accountAfter, error: verifyError } = await userA
+		// Verify both original accounts remain unchanged.
+		const { data: accountAfterA, error: verifyErrorA } = await userA
 			.from('accounts')
-			.select('id, user_id, name')
+			.select('id, user_id, name, account_type, initial_balance')
 			.eq('id', accountAId)
 			.single();
 
-		expect(verifyError).toBeNull();
-		expect(accountAfter).toEqual(originalAccountA);
+		const { data: accountAfterB, error: verifyErrorB } = await userB
+			.from('accounts')
+			.select('id, user_id, name, account_type, initial_balance')
+			.eq('id', accountBId)
+			.single();
+
+		expect(verifyErrorA).toBeNull();
+		expect(verifyErrorB).toBeNull();
+
+		expect(accountAfterA).toEqual(originalAccountA);
+		expect(accountAfterB).toEqual(originalAccountB);
 	});
 
 	it('prevents users from deleting each other accounts', async () => {
@@ -378,16 +432,24 @@ describe('Row Level Security integration tests', () => {
 		expect(errorB).toBeNull();
 		expect(dataB).toEqual([]);
 
-		// Verify User A's account still exists.
-		const { data: accountAfter, error: verifyError } = await userA
+		// Verify both original accounts still exist and remain unchanged.
+		const { data: accountAfterA, error: verifyErrorA } = await userA
 			.from('accounts')
-			.select('id, user_id')
+			.select('id, user_id, name, account_type, initial_balance')
 			.eq('id', accountAId)
 			.single();
 
-		expect(verifyError).toBeNull();
-		expect(accountAfter?.id).toBe(accountAId);
-		expect(accountAfter?.user_id).toBe(userAId);
+		const { data: accountAfterB, error: verifyErrorB } = await userB
+			.from('accounts')
+			.select('id, user_id, name, account_type, initial_balance')
+			.eq('id', accountBId)
+			.single();
+
+		expect(verifyErrorA).toBeNull();
+		expect(verifyErrorB).toBeNull();
+
+		expect(accountAfterA).toEqual(originalAccountA);
+		expect(accountAfterB).toEqual(originalAccountB);
 	});
 
 	// --------------------------------------------------
@@ -410,7 +472,6 @@ describe('Row Level Security integration tests', () => {
 		expect(error).not.toBeNull();
 		expect(data).toBeNull();
 
-		// Verify that no account was created.
 		const { data: accountsAfter, error: verifyError } = await userB
 			.from('accounts')
 			.select('id')
@@ -436,7 +497,6 @@ describe('Row Level Security integration tests', () => {
 		expect(error).not.toBeNull();
 		expect(data).toBeNull();
 
-		// Verify that no account was created.
 		const { data: accountsAfter, error: verifyError } = await userA
 			.from('accounts')
 			.select('id')

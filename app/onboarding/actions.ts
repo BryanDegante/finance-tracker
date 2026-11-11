@@ -29,6 +29,7 @@ export async function completeOnboarding(
 	if (
 		!data ||
 		typeof data.fullName !== 'string' ||
+		typeof data.displayName !== 'string' ||
 		typeof data.startingBalance !== 'string' ||
 		typeof data.theme !== 'string'
 	) {
@@ -36,11 +37,22 @@ export async function completeOnboarding(
 	}
 
 	const fullName = data.fullName.trim();
+	const displayName = data.displayName.trim();
 	const theme = data.theme;
 
-	if (fullName.length > 60) {
-		return { error: 'Your name must be 60 characters or fewer.' };
+	if (!fullName) {
+		return { error: 'Please enter your full name.' };
 	}
+
+	if (fullName.length > 60) {
+		return { error: 'Your full name must be 60 characters or fewer.' };
+	}
+
+	if (displayName.length > 60) {
+		return { error: 'Your display name must be 60 characters or fewer.' };
+	}
+
+	const finalDisplayName = displayName || fullName;
 
 	if (theme !== 'light' && theme !== 'dark') {
 		return { error: 'Please select a valid theme.' };
@@ -74,7 +86,8 @@ export async function completeOnboarding(
 	const { error: onboardingError } = await supabase.rpc(
 		'complete_onboarding',
 		{
-			p_full_name: fullName || null,
+			p_full_name: fullName,
+			p_display_name: finalDisplayName,
 			p_starting_balance: startingBalance,
 			p_theme: theme,
 		},

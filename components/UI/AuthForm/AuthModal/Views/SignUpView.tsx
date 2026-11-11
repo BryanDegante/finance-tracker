@@ -122,27 +122,7 @@ export default function SignUpView({
 				}}
 				className="flex flex-col gap-4"
 			>
-				{/* Name */}
-				<div className="flex flex-col gap-1.5">
-					<label
-						htmlFor="signup-name"
-						className="text-sm font-medium text-text-secondary"
-					>
-						Name
-					</label>
-
-					<input
-						id="signup-name"
-						name="name"
-						type="text"
-						placeholder="Enter your name"
-						autoComplete="name"
-						required
-						maxLength={80}
-						disabled={isPending}
-						className="min-h-11 w-full rounded-cozy-sm border border-border bg-card px-3 py-2.5 text-sm text-text-primary transition-colors duration-200 placeholder:text-text-muted hover:border-secondary-hover focus:border-secondary focus:outline-none focus:ring-2 focus:ring-secondary/20 disabled:cursor-not-allowed disabled:opacity-60 sm:text-base"
-					/>
-				</div>
+		
 
 				{/* Email */}
 				<div className="flex flex-col gap-1.5">

@@ -1,9 +1,6 @@
 import type { OnboardingStepProps } from '@/types/onboarding';
 
-export default function ProfileStep({
-	data,
-	updateData,
-}: OnboardingStepProps) {
+export default function ProfileStep({ data, updateData }: OnboardingStepProps) {
 	return (
 		<div className="flex flex-col gap-7">
 			{/* Step Heading */}
@@ -20,10 +17,38 @@ export default function ProfileStep({
 			</div>
 
 			<div className="flex flex-col gap-5">
-				{/* Display Name */}
+				{/* Full Name */}
 				<div className="space-y-2">
 					<label
 						htmlFor="fullName"
+						className="block text-sm font-semibold text-text-primary"
+					>
+						What’s your full name?
+						<span className="ml-2 text-xs font-normal text-danger">
+							Required
+						</span>
+					</label>
+
+					<input
+						id="fullName"
+						name="fullName"
+						type="text"
+						autoComplete="name"
+						maxLength={60}
+						required
+						value={data.fullName}
+						onChange={(event) =>
+							updateData({ fullName: event.target.value })
+						}
+						placeholder="Your full name"
+						className="w-full rounded-xl border border-border bg-card px-4 py-3 text-text-primary transition-colors placeholder:text-text-muted/80 hover:border-border-hover focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+					/>
+				</div>
+
+				{/* Display Name */}
+				<div className="space-y-2">
+					<label
+						htmlFor="displayName"
 						className="block text-sm font-semibold text-text-primary"
 					>
 						What should we call you?
@@ -33,16 +58,16 @@ export default function ProfileStep({
 					</label>
 
 					<input
-						id="fullName"
-						name="fullName"
+						id="displayName"
+						name="displayName"
 						type="text"
 						autoComplete="nickname"
 						maxLength={60}
-						value={data.fullName}
+						value={data.displayName}
 						onChange={(event) =>
-							updateData({ fullName: event.target.value })
+							updateData({ displayName: event.target.value })
 						}
-						placeholder="Your name or nickname"
+						placeholder="Your preferred name"
 						className="w-full rounded-xl border border-border bg-card px-4 py-3 text-text-primary transition-colors placeholder:text-text-muted/80 hover:border-border-hover focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
 					/>
 				</div>
@@ -89,8 +114,6 @@ export default function ProfileStep({
 						/>
 					</div>
 				</div>
-
-			
 			</div>
 
 			<p className="text-xs leading-relaxed text-text-muted">

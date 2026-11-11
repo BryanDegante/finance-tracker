@@ -16,18 +16,17 @@ type OnBoardingFlowProps = {
 	initialTheme: 'light' | 'dark';
 };
 
-export default function OnBoardingFlow({
-	initialTheme,
-}: OnBoardingFlowProps) {
+export default function OnBoardingFlow({ initialTheme }: OnBoardingFlowProps) {
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isPending, startTransition] = useTransition();
 	const [submitError, setSubmitError] = useState<string | null>(null);
 
-const [formData, setFormData] = useState<OnboardingData>({
-	fullName: '',
-	startingBalance: '',
-	theme: initialTheme,
-});
+	const [formData, setFormData] = useState<OnboardingData>({
+		fullName: '',
+		displayName: '',
+		startingBalance: '',
+		theme: initialTheme,
+	});
 
 	const updateData = (fields: Partial<OnboardingData>) => {
 		setFormData((prev) => ({
