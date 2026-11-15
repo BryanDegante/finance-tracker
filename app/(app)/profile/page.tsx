@@ -2,7 +2,7 @@ import PersonalInfo from "@/components/Profile/PersonalInfo";
 import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-
+import { updateProfileAction } from "@/app/actions/profile";
 
 export default async function Profile() {
   const cookieStore = await cookies();
@@ -46,7 +46,7 @@ export default async function Profile() {
 			<h1 className="font-nunito-titles text-2xl font-bold text-text-primary">
 				Profile
       </h1>
-      <PersonalInfo fullName={fullName} displayName={displayName}/>
+      <PersonalInfo fullName={fullName} displayName={displayName} onSave={updateProfileAction}/>
       </div>
 		</main>
   );
