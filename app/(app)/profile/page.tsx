@@ -3,40 +3,41 @@ import { createClient } from '@/utils/supabase/server';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { updateProfileAction } from "@/app/actions/profile";
+import EmailAddress from "@/components/Profile/EmailAddress";
 
 export default async function Profile() {
   const cookieStore = await cookies();
   const supabase = createClient(cookieStore);
+const {
+  data: { user },
+  error: userError,
+} = await supabase.auth.getUser();
 
-  
-  const { data, error } = await supabase.auth.getClaims();
-  const claims = data?.claims;
+if (userError || !user) {
+  redirect('/');
+}
 
-  if (error || !claims?.sub) {
-    redirect('/');
-  }
+const { data: profile, error: profileError } = await supabase
+  .from('profiles')
+  .select('display_name, full_name, onboarding_completed')
+  .eq('id', user.id)
+  .maybeSingle();
 
-    const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('display_name, full_name, onboarding_completed')
-    .eq('id', claims.sub)
-    .maybeSingle();
+if (profileError) {
+  throw new Error('Unable to load your settings.');
+}
 
-    
-  if (profileError) {
-    throw new Error('Unable to load your settings.');
-  }
+if (!profile) {
+  throw new Error('Your profile could not be found.');
+}
 
-  if (!profile) {
-    throw new Error('Your profile could not be found.');
-  }
+if (!profile.onboarding_completed) {
+  redirect('/onboarding');
+}
 
-  if (!profile.onboarding_completed) {
-    redirect('/onboarding');
-  }
-
-  const fullName = profile.full_name;
-  const displayName = profile.display_name;
+const fullName = profile.full_name;
+const displayName = profile.display_name;
+const email = user.email ?? '';
 
 
   return (
@@ -47,6 +48,7 @@ export default async function Profile() {
 				Profile
       </h1>
       <PersonalInfo fullName={fullName} displayName={displayName} onSave={updateProfileAction}/>
+      <EmailAddress emailAddress={email}/>
       </div>
 		</main>
   );

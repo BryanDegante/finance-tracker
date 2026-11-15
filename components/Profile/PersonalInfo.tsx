@@ -21,8 +21,6 @@ export default function PersonalInfo({
 
   const [validationError, setValidationError] = useState<string | null>(null);
 
-  // Keep local state synchronized with the latest saved profile.
-  // Do not overwrite the user's changes while they are editing.
   useEffect(() => {
     if (!isEditing) {
       setCurrentDisplayName(displayName);
@@ -91,7 +89,6 @@ export default function PersonalInfo({
   const handleCancel = () => {
     if (isSaving) return;
 
-    // Restore the latest saved values from the parent.
     setCurrentDisplayName(displayName);
     setCurrentFullName(fullName);
 
