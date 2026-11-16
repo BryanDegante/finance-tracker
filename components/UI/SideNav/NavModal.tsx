@@ -102,7 +102,7 @@ export default function NavModal() {
 						aria-label="Open navigation menu"
 						aria-expanded={isOpen}
 						aria-controls="mobile-navigation-dialog"
-						className="p-2 rounded-cozy-sm text-text-primary hover:bg-primary-light transition-colors"
+						className="p-2 rounded-cozy-sm text-text-primary hover:bg-primary-light transition-colors cursor-pointer"
 					>
 						<HiMenu aria-hidden="true" className="text-2xl" />
 					</button>
@@ -170,7 +170,7 @@ export default function NavModal() {
 								type="button"
 								onClick={closeDrawer}
 								aria-label="Close navigation menu"
-								className="p-2 rounded-cozy-sm text-text-primary hover:bg-primary-light transition-colors"
+								className="p-2 rounded-cozy-sm text-text-primary hover:bg-primary-light transition-colors cursor-pointer"
 							>
 								<HiX aria-hidden="true" className="text-2xl" />
 							</button>
@@ -253,7 +253,7 @@ export default function NavModal() {
 								<form action={logoutAction} className="w-full">
 									<button
 										type="submit"
-										className="w-full text-text-primary flex items-center justify-start text-base sm:text-lg font-medium rounded-cozy-sm font-nunito-titles transition-colors py-2.5 px-3 hover:bg-primary-light"
+										className="w-full text-text-primary flex items-center justify-start text-base sm:text-lg font-medium rounded-cozy-sm font-nunito-titles transition-colors py-2.5 px-3 hover:bg-primary-light cursor-pointer"
 									>
 										<div className="w-6 h-6 flex items-center justify-center shrink-0">
 											<MdOutlineLogout

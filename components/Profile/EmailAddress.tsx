@@ -5,17 +5,23 @@ import { useState } from 'react';
 
 type EmailAddressProps = {
   emailAddress: string;
+  onSave: (email: string) => Promise<void>;
 };
 
-export default function EmailAddress({ emailAddress }: EmailAddressProps) {
+export default function EmailAddress({
+  emailAddress,
+  onSave,
+}: EmailAddressProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [currentEmail, setCurrentEmail] = useState(emailAddress);
   const [validationError, setValidationError] = useState('');
+  const [statusMessage, setStatusMessage] = useState('');
 
   const handleEdit = () => {
     setCurrentEmail(emailAddress);
     setValidationError('');
+    setStatusMessage('');
     setIsEditing(true);
   };
 
@@ -25,11 +31,18 @@ export default function EmailAddress({ emailAddress }: EmailAddressProps) {
     setIsEditing(false);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (isSaving) return;
+
     const trimmedEmail = currentEmail.trim();
 
     if (!trimmedEmail) {
       setValidationError('Email address is required.');
+      return;
+    }
+
+    if (trimmedEmail.length > 254) {
+      setValidationError('Email address is too long.');
       return;
     }
 
@@ -38,77 +51,112 @@ export default function EmailAddress({ emailAddress }: EmailAddressProps) {
       return;
     }
 
-    setCurrentEmail(trimmedEmail);
+    // Avoid requesting an email update when nothing changed.
+    if (trimmedEmail.toLowerCase() === emailAddress.trim().toLowerCase()) {
+      setCurrentEmail(emailAddress);
+      setValidationError('');
+      setIsEditing(false);
+      return;
+    }
+
+    setIsSaving(true);
     setValidationError('');
-    setIsEditing(false);
+    setStatusMessage('');
+
+    try {
+      await onSave(trimmedEmail);
+
+      // Supabase requires email confirmation.
+      // Keep displaying the current email until confirmation.
+      setCurrentEmail(emailAddress);
+      setIsEditing(false);
+      setStatusMessage(
+        'Check your inbox to confirm your new email address.',
+      );
+    } catch (error) {
+      setValidationError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to update your email. Please try again.',
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
-    <section
-      aria-labelledby='email-address'
-      className='flex flex-col gap-5 my-6 bg-card p-6 sm:p-8 rounded-cozy border border-border shadow-sm'>
-      {/* Header wrapper */}
-      <div className='flex items-center justify-between'>
-        <h2
-          id='email-address'
-          className='text-text-primary text-lg sm:text-xl font-semibold font-nunito-titles'>
-          Email Address
-        </h2>
-        <div className='bg-card-muted w-fit px-3 py-1 rounded-full text-xs font-medium capitalize text-text-secondary transition-colors'>
-          {isEditing ? 'edit mode' : 'view mode'}
+    <section className='mt-6 rounded-cozy border border-border bg-card p-5 shadow-cozy sm:p-6'>
+      <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+        <div>
+          <h2 className='font-nunito-titles text-lg font-bold text-text-primary'>
+            Email Address
+          </h2>
+
+          <p className='mt-1 text-sm text-text-secondary'>
+            Manage the email address associated with your account.
+          </p>
         </div>
-      </div>
 
-      <div className='flex flex-col gap-1.5'>
-        <label
-          className='text-xs font-semibold uppercase tracking-wider text-text-muted'
-          htmlFor='email'>
-          Email
-        </label>
-
-        {isEditing ? (
-          <>
-            <input
-              id='email'
-              type='email'
-              value={currentEmail}
-              onChange={(e) => {
-                setCurrentEmail(e.target.value);
-                if (validationError) setValidationError('');
-              }}
-              required
-              disabled={isSaving}
-              aria-invalid={!!validationError}
-              aria-describedby={validationError ? 'email-error' : undefined}
-              className='bg-card-muted p-3 sm:p-4 rounded-cozy-sm text-text-primary border border-border focus:border-primary focus:outline-none transition-all'
-            />
-
-            {validationError && (
-              <p
-                id='email-error'
-                role='alert'
-                className='text-xs text-text-muted'>
-                {validationError}
-              </p>
-            )}
-          </>
-        ) : (
-          <div className='bg-card-muted p-3 sm:p-4 rounded-cozy-sm text-text-primary'>
-            {currentEmail}
-          </div>
+        {!isEditing && (
+          <button
+            type='button'
+            onClick={handleEdit}
+            className='rounded-cozy-sm bg-secondary px-4 py-2 text-sm font-semibold text-text-primary transition-colors hover:bg-secondary-hover'
+          >
+            Edit
+          </button>
         )}
       </div>
 
-      {/* Action buttons wrapper */}
-      <div className='flex flex-col gap-3 pt-2'>
-        <div className='flex justify-end gap-3'>
-          {isEditing ? (
-            <>
+      <div className='mt-5'>
+        {isEditing ? (
+          <div className='space-y-4'>
+            <p className='text-xs font-medium text-text-muted'>
+              edit mode
+            </p>
+
+            <div>
+              <label
+                htmlFor='email'
+                className='mb-2 block text-sm font-semibold text-text-primary'
+              >
+                Email
+              </label>
+
+              <input
+                id='email'
+                type='email'
+                value={currentEmail}
+                onChange={(event) => {
+                  setCurrentEmail(event.target.value);
+                  setValidationError('');
+                }}
+                disabled={isSaving}
+                aria-invalid={Boolean(validationError)}
+                aria-describedby={
+                  validationError ? 'email-error' : undefined
+                }
+                className='w-full rounded-cozy-sm border border-border bg-card px-4 py-3 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-60'
+              />
+
+              {validationError && (
+                <p
+                  id='email-error'
+                  role='alert'
+                  className='mt-2 text-sm text-red-500'
+                >
+                  {validationError}
+                </p>
+              )}
+            </div>
+
+            <div className='flex flex-wrap items-center gap-3'>
               <button
                 type='button'
                 onClick={handleCancel}
                 disabled={isSaving}
-                className='rounded-cozy-sm cursor-pointer w-fit px-4 py-2 bg-card-muted text-text-muted hover:text-text-primary transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed'>
+                className='rounded-cozy-sm border border-border px-4 py-2 text-sm font-semibold text-text-secondary transition-colors hover:bg-card-muted disabled:cursor-not-allowed disabled:opacity-60'
+              >
                 Cancel
               </button>
 
@@ -116,50 +164,40 @@ export default function EmailAddress({ emailAddress }: EmailAddressProps) {
                 type='button'
                 onClick={handleSave}
                 disabled={isSaving}
-                aria-busy={isSaving}
-                className='rounded-cozy-sm cursor-pointer w-fit px-5 py-2 bg-primary text-white hover:opacity-95 transition-all text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed'>
+                className='flex items-center justify-center gap-2 rounded-cozy-sm bg-primary px-4 py-2 text-sm font-semibold text-text-primary transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60'
+              >
                 {isSaving ? (
-                  <span className='flex items-center gap-2'>
-                    <svg
-                      className='h-4 w-4 animate-spin'
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      aria-hidden='true'>
-                      <circle
-                        className='opacity-25'
-                        cx='12'
-                        cy='12'
-                        r='10'
-                        stroke='currentColor'
-                        strokeWidth='4'
-                      />
-                      <path
-                        className='opacity-75'
-                        fill='currentColor'
-                        d='M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z'
-                      />
-                    </svg>
+                  <>
+                    <span
+                      className='h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent'
+                      aria-hidden='true'
+                    />
                     Saving...
-                  </span>
+                  </>
                 ) : (
                   'Save Changes'
                 )}
               </button>
-            </>
-          ) : (
-            <button
-              type='button'
-              onClick={handleEdit}
-              className='rounded-cozy-sm cursor-pointer w-fit px-5 py-2 bg-secondary text-text-primary hover:opacity-90 transition-all text-sm font-semibold shadow-sm'>
-              Edit
-            </button>
-          )}
-        </div>
+            </div>
+          </div>
+        ) : (
+          <div className='space-y-2'>
+            <p className='text-xs font-medium text-text-muted'>
+              view mode
+            </p>
 
-        {isEditing && isSaving && (
-          <p role='status' className='text-xs text-text-muted text-right'>
-            Saving your profile...
+            <p className='break-all text-sm font-medium text-text-primary'>
+              {emailAddress}
+            </p>
+          </div>
+        )}
+
+        {statusMessage && (
+          <p
+            role='status'
+            className='mt-4 text-sm font-medium text-text-secondary'
+          >
+            {statusMessage}
           </p>
         )}
       </div>

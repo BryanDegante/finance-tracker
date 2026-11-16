@@ -1,4 +1,3 @@
-
 'use server';
 
 import { createClient } from '@/utils/supabase/server';
@@ -63,5 +62,45 @@ export async function updateProfileAction(
     throw new Error('Unable to find your profile.');
   }
 
+  revalidatePath('/profile');
+}
+
+export async function updateEmailAction(newEmail: string): Promise<void> {
+  if (typeof newEmail !== 'string' || !newEmail.trim()) {
+    throw new Error('Please enter a valid email address.');
+  }
+  const email = newEmail.trim();
+
+  if (email.length > 254) {
+    throw new Error('Email address is too long.');
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(email)) {
+    throw new Error('Please enter a valid email address.');
+  }
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error('You must be signed in to change your email.');
+  }
+  if (user.email?.toLowerCase() === email.toLowerCase()) {
+    throw new Error('This is already your current email address.');
+  }
+  const { error: updateError } = await supabase.auth.updateUser({
+    email,
+  });
+
+  if (updateError) {
+    console.error('Email update failed:', updateError.code);
+    throw new Error('Unable to update your email. Please try again.');
+  }
   revalidatePath('/profile');
 }
